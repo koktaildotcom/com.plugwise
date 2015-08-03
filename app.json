@@ -1,0 +1,68 @@
+{
+	"id": "com.plugwise",
+	"version": "0.1.3",
+	"compatibility": ">=0.1.0",
+	"name": {
+		"en": "Plugwise"
+	},
+	"description": {
+		"en": "Connect Homey with your Plugwise devices to manage your energy consumption throughout your house"
+	},
+	"author": {
+		"name": "Sebastiaan den Boer",
+		"website": "http://www.sebastiaandenboer.com"
+	},
+	"permissions": [],
+	"drivers": [
+		{
+			"id": "stretch",
+			"name": {
+				"en": "Stretch"
+			},
+			"icon": "",
+			"class": "stretches",
+			"capabilities": [ "on", "off", "check" ],
+			"pair": [
+					{
+						"id": "start"
+					},
+					{
+						"id": "list_plugwises",
+				        "template": "list_devices",
+				        "navigation": {
+				          "next": "list_appliances"
+				        }
+					},
+					{
+						"id": "list_appliances",
+				        "template": "list_devices"
+					}
+			]
+		},
+		{
+			"id": "anna",
+			"name": {
+				"en": "Anna"
+			},
+			"icon": "",
+			"class": "annas",
+			"capabilities": [ "measure_temperature", "target_temperature" ],
+			"pair": [
+					{
+						"id": "start"
+					},
+					{
+						"id": "list_devices",
+				        "template": "list_devices",
+				        "navigation": {
+				          "next": "list_appliances"
+				        }
+					},
+					{
+						"id": "list_appliances",
+				        "template": "list_devices"
+					}
+			]
+		}
+	]
+}

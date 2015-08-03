@@ -1,0 +1,7 @@
+<script type="text/javascript">
+    Homey.setTitle( __('pair.start.title') );
+    Homey.emit( 'list_plugwises', {}, function(result) {
+        console.log(result);
+        Homey.showView('list_plugwises');
+    });
+</script>

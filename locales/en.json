@@ -1,0 +1,20 @@
+{
+	"pair": {
+		"search": {
+			"smile": {
+				"title": "Looking for your Smile bridges..."
+			},
+			"anna": {
+				"title": "Looking for your Anna Thermostat..."
+			}
+		},
+		"list": {
+			"smile": {
+				"title": "We found these Smile bridges:"
+			},
+			"anna":{
+				"title": "We found these Anna Thermostats:"
+			}
+		}
+	}
+}

@@ -1,0 +1,6 @@
+node_modules
+userdata
+userconf.json
+
+# client id & secret
+config.json
