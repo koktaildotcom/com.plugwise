@@ -1,0 +1,14 @@
+<body>
+	<center>
+		<input type="text" id="pswd" value="twnnbmhp" onkeyup="updatePassword()">
+	</center>
+</body>
+	
+<script type="text/javascript">
+    Homey.setTitle( __('pair.authenticate.smile.title') );
+	var password = '';
+	
+	function updatePassword(){
+		window.found_devices[ window.selected_devices[0] ].data.password = document.getElementById('pswd').value;
+	}
+</script>

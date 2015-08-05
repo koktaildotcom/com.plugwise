@@ -5,7 +5,7 @@ var driver = require('../drivers/anna/driver');
 driver.init( function( result ) {} );
 driver.pair.start( function() {} );
 
-driver.pair.list_plugwises( function( callback ) {
+driver.pair.list_devices( function( callback ) {
 	console.log('\nI found these devices:');
 	console.log(callback);
 	
@@ -17,7 +17,7 @@ driver.pair.list_plugwises( function( callback ) {
 		var password = 'twnnbmhp';
 		
 		//list appliances
-		driver.pair.list_appliances( smile, password, function( result ) {
+		driver.pair.connect( smile, password, function( result ) {
 			console.log('\nI found this Anna:');
 			console.log(result[0]);
 			
@@ -29,9 +29,6 @@ driver.pair.list_plugwises( function( callback ) {
 				id				: result[0].id,
 				ip				: smile.ip
 			};
-			
-			
-			
 		});
 	}
 });

@@ -1,17 +1,19 @@
+/* global Homey */
 "use strict";
 
+var XML = require('pixl-xml');
+var request = require('request');
 var Plugwise = require('plugwise');
 var plugwise = '';
 
 var smiles = [];
-var annas = [];
 var pairing = {};
 
 module.exports = {
         
-	init: function( callback ){
+	init: function( devices, callback ){
 		plugwise = new Plugwise;
-		callback;
+		callback();
 	},
 	
 	name: {
@@ -21,40 +23,38 @@ module.exports = {
 	},
 	
 	capabilities: {
-		
-		//TODO: TESTING
-		measure_temperature: {
+		target_temperature: {
 			get: function( device, callback ){
-				requestTemp( device );
+				getTarget( device, function(target){
+					return callback( target );
+				});
+			},
+			set: function( device, target_temperature, callback ){
+				setTarget( device, target_temperature, callback );
 			}
 		},
-		
-		//TODO: TESTING / CLEANUP
-		target_temperature: {
-		    get: function(device, temperature, callback){ 
-		        // device_data is the object as saved during pairing
-		        var anna = device;
-				
-				//update anna with a new temperature
-				var temp = changeTemp( device, temperature );
-				console.log('Temperature changed to: ' + temp);
-				
-		        // send the anna to Homey
-		        if( typeof callback == 'function' ) {
-		            callback( anna );
-		        }
-	    	}
+		measure_temperature: {
+			get: function( device, callback ){
+				measureTemp( device, function(temp){
+					return callback( temp );
+				});
+			}
 		}
 	},
 	
 	pair: {
 		start: function(callback, event, data){			
 			plugwise.find('smile', function(plugwise_devices){
+				smiles = [];
 				
 				plugwise_devices.forEach(function(element) {
 					smiles.push({
-						ip				: element.addresses[0],
-						name			: 'smile'
+						data: {
+							id				: element.host, //SSID
+							ip				: element.addresses[0], //IP
+							name			: 'smile' //TYPE
+						},
+						name				: element.host
 					});
 				}, this);
 				
@@ -67,33 +67,47 @@ module.exports = {
 		},
 	
 		list_devices: function(callback, event, data) {
-			//TEST
-			smiles.push({
-				ip				: '192.111.1.1',
-				name			: 'smile'
-			});
-			
 			callback(smiles);
 		},
 		
-		list_appliances: function( smile, password, callback ) {
-			plugwise.findDevices(smile, password, function(result) {
+		authenticate: function(callback, event, data ) {
+			callback(true);
+		},
+		
+		connect: function( callback, event, data ) {
+			plugwise.findDevices(data, function(result) {
 				callback(result);
 			});
 		},
 	}
 }
 
-function changeTemp(device, temperature) {
-	var request = require('request');
-	var url = 'http://smile:' + device.password + '@' + device.ip + '/core/appliances;id=' + device.id + '/thermostat';
-	request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(){
-		return temperature;
+function setTarget(device, temperature, callback) {
+	plugwise.getDevice(device, function(smile){
+		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.id + '/thermostat';
+		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(){
+			return callback(temperature);
+		});
 	});
 };
 
-function requestTemp(device, temperature) {
-	plugwise.findDevices(device.ip, device.password, function(callback) {
-		return temperature(callback.filter(function(x){return x.id == device.id})[0].temp);
+function getTarget(device, temperature) {
+	plugwise.getDevice(device, function(smile){
+		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.id;
+		request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
+		    var doc = XML.parse(body);
+			return temperature(doc.appliance.actuators.thermostat.setpoint);
+		});
 	});
 };
+
+function measureTemp(device, temperature) {
+	plugwise.getDevice(device, function(smile){
+		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.id;
+		request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
+		    var doc = XML.parse(body);
+			var temp = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
+			return temperature(temp.period.measurement._Data);
+		});
+	});
+}

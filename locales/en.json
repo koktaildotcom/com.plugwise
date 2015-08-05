@@ -15,6 +15,16 @@
 			"anna":{
 				"title": "We found these Anna Thermostats:"
 			}
+		},
+		"authenticate": {
+			"smile": {
+				"title": "Please enter your Smile bridge password"
+			}
+		},
+		"connect": {
+			"smile": {
+				"title": "Validating your password with Anna"
+			}
 		}
 	}
 }

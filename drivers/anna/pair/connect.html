@@ -1,0 +1,40 @@
+<head>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+
+<body>
+	<center>
+		<div class="cssload-container">
+			<div class="cssload-item cssload-moon"></div>
+		</div>
+			<h1>one moment...</h1>
+	</center>
+</body>
+	
+<script type="text/javascript">
+    Homey.setTitle( __('pair.connect.smile.title') );
+	
+	var smile = window.found_devices[ window.selected_devices[0] ].data;
+		
+	Homey.emit('connect', { smile }, function( result ){
+		if(result === false){
+			alert("Couldn't add the device. Password invalid.");
+			Homey.showView('authenticate');
+		} else {
+			console.log( result[0] );
+			
+			Homey.addDevice({
+			    data: {
+			        id: smile.id,
+					password: smile.password					
+			    },
+			    name: smile.name
+			}, function( result ){
+			    console.log(result);
+			});
+			
+			Homey.done();
+		}
+		
+	});
+</script>

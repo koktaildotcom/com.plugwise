@@ -20,7 +20,7 @@
 				"en": "Stretch"
 			},
 			"icon": "",
-			"class": "stretches",
+			"class": "onoff",
 			"capabilities": [ "on", "off", "check" ],
 			"pair": [
 					{
@@ -28,7 +28,7 @@
 					},
 					{
 						"id": "list_plugwises",
-				        "template": "list_devices",
+				        "template": "list_devices_singular",
 				        "navigation": {
 				          "next": "list_appliances"
 				        }
@@ -44,23 +44,27 @@
 			"name": {
 				"en": "Anna"
 			},
-			"icon": "",
-			"class": "annas",
-			"capabilities": [ "measure_temperature", "target_temperature" ],
+			"class": "thermostat",
+			"capabilities": [ "target_temperature", "measure_temperature" ],
 			"pair": [
 					{
 						"id": "start"
 					},
 					{
 						"id": "list_devices",
-				        "template": "list_devices",
+				        "template": "list_devices_singular",
 				        "navigation": {
-				          "next": "list_appliances"
+				          "next": "authenticate"
 				        }
 					},
 					{
-						"id": "list_appliances",
-				        "template": "list_devices"
+						"id": "authenticate",
+						"navigation": {
+							"next": "connect"
+						}
+					},
+					{
+						"id": "connect"
 					}
 			]
 		}
