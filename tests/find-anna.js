@@ -27,7 +27,7 @@ setTimeout(function() {
 function goahead(device){
 	var request = require('request');
 	console.log(device.ip);
-	console.log(device.id);
+	/*console.log(device.id);
 	var url = 'http://smile:' + 'twnnbmhp' + '@' + device.ip + '/core/appliances;id=' + device.id;
 		request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
 		    
@@ -36,9 +36,9 @@ function goahead(device){
 			
 			var log = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
 			console.log(log.period.measurement._Data);
-		});
+		});*/
 
-/*
+
 console.log(device);
 
 var url = 'http://' + device.name + ':' + device.password + '@' + device.ip + '/core/appliances';
@@ -70,7 +70,7 @@ var url = 'http://' + device.name + ':' + device.password + '@' + device.ip + '/
 		 
 		console.log(devices[0].id);
 		
-		*/
-	//});
+		
+	});
 }
 

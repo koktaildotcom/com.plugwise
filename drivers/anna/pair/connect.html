@@ -20,21 +20,19 @@
 		if(result === false){
 			alert("Couldn't add the device. Password invalid.");
 			Homey.showView('authenticate');
-		} else {
-			console.log( result[0] );
+		} else {			
+			console.log(result[0].id);
 			
 			Homey.addDevice({
 			    data: {
 			        id: smile.id,
+					anna: result[0].id,
 					password: smile.password					
 			    },
 			    name: smile.name
 			}, function( result ){
-			    console.log(result);
+			    Homey.done();
 			});
-			
-			Homey.done();
 		}
-		
 	});
 </script>

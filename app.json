@@ -15,31 +15,6 @@
 	"permissions": [],
 	"drivers": [
 		{
-			"id": "stretch",
-			"name": {
-				"en": "Stretch"
-			},
-			"icon": "",
-			"class": "onoff",
-			"capabilities": [ "on", "off", "check" ],
-			"pair": [
-					{
-						"id": "start"
-					},
-					{
-						"id": "list_plugwises",
-				        "template": "list_devices_singular",
-				        "navigation": {
-				          "next": "list_appliances"
-				        }
-					},
-					{
-						"id": "list_appliances",
-				        "template": "list_devices"
-					}
-			]
-		},
-		{
 			"id": "anna",
 			"name": {
 				"en": "Anna"
