@@ -11,11 +11,10 @@ function App()
 
 module.exports = App;
 
-App.prototype.init = function(){	
+App.prototype.init = function(){
 	
 	browser.on('ready', function () {
-		browser.discover(); 
-		console.log('Looking for Plugwise devices...');
+		browser.discover();
 	});
 
 	browser.on('update', function (data) {
@@ -27,4 +26,8 @@ App.prototype.getDevices = function(device_type, callback){
 	setTimeout(function() {
 		return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
 	}, 5000);
+}
+
+App.prototype.poll = function(){
+	
 }

@@ -18,13 +18,14 @@ module.exports = {
 		
 		if(devices_homey.length > 0) {
 			plugwise.getDevices(devices_homey, 'smile', function(result){
-				Homey.log(result);
 				devices = result;
 				callback();
 			});
 		} else {
 			callback();
 		}
+		
+		pollTemperature();		
 	},
 	
 	deleted: function ( device_homey, callback ){
@@ -33,7 +34,7 @@ module.exports = {
 	
 	name: {
 		set: function( device, name, callback ) {
-			// An Anna device does not have a name
+			
 		}
 	},
 	
@@ -46,7 +47,7 @@ module.exports = {
 			},
 			set: function( device, target_temperature, callback ){
 				setTarget( device, target_temperature, function(result){
-					callback(result);
+					return callback(result);
 				});
 			}
 		},
@@ -100,38 +101,63 @@ module.exports = {
 	}
 }
 
-function setTarget(device, temperature, callback) {
-	
-	if(temperature > 30){
-		temperature = 30;
-	}
-	
-	if(temperature < 4){
-		temperature = 4;
-	}
-	
-	var smile = devices.filter(function(x) { return x.id === device.id })[0];
-	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna + '/thermostat';
-	request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(){
-		callback(temperature);
-	});
+function setTarget(device, input, callback) {
+	validate(input, function(temperature){		
+		var smile = devices.filter(function(x) { return x.id === device.id })[0];
+		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna + '/thermostat';
+		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(){
+			
+			module.exports.realtime({
+				id: device.id
+			}, 'target_temperature', temperature);
+			callback(temperature);
+		});
+	});	
 };
 
-function getTarget(device, temperature) {
+function getTarget(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
 	    var doc = XML.parse(body);
-		temperature(doc.appliance.actuators.thermostat.setpoint);
+		var temperature = doc.appliance.actuators.thermostat.setpoint;
+		
+		module.exports.realtime({
+			id: device.id
+		}, 'target_temperature', temperature);
+		callback(temperature);
 	});
 };
 
-function measureTemp(device, temperature) {
+function measureTemp(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
 	    var doc = XML.parse(body);
 		var temp = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
-		temperature(temp.period.measurement._Data);
+		callback(temp.period.measurement._Data);
 	});
+}
+
+function validate(temperature, callback){
+	if(temperature > 30){
+		callback(30);
+	}
+	
+	if(temperature < 4){
+		callback(4);
+	}
+	
+	callback(Math.round(temperature * 2) / 2);	
+}
+
+function pollTemperature(){
+	try {
+		devices.forEach(function(element) {
+			getTarget(element, function(callback) {
+			});
+		}, this);
+	}
+	catch(err) { }
+   	setTimeout(pollTemperature, 3000);
 }
