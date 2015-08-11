@@ -141,14 +141,13 @@ function measureTemp(device, callback) {
 
 function validate(temperature, callback){
 	if(temperature > 30){
-		callback(30);
+		return callback(30);
 	}
-	
-	if(temperature < 4){
-		callback(4);
-	}
-	
-	callback(Math.round(temperature * 2) / 2);	
+	else if(temperature < 4){
+		return callback(4);
+	} else {	
+		callback(Math.round(temperature * 2) / 2);
+	}	
 }
 
 function pollTemperature(){
