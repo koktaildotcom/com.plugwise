@@ -1,7 +1,23 @@
+<head>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+
+<body>
+	<center>
+		<div class="cssload-container">
+			<div class="cssload-item cssload-moon"></div>
+		</div>
+			<h1>one moment...</h1>
+	</center>
+</body>
+	
 <script type="text/javascript">
-    Homey.setTitle( __('pair.start.title') );
-    Homey.emit( 'list_plugwises', {}, function(result) {
-        console.log(result);
-        Homey.showView('list_plugwises');
-    });
+    Homey.setTitle( __('pair.search.stretch.title') );
+	
+    Homey.emit('start', {}, function( result ){
+		if( result === true ) {
+			Homey.setTitle( __('pair.list.stretch.title') );
+		}
+		Homey.showView('list_devices');
+	});
 </script>

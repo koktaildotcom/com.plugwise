@@ -27,7 +27,3 @@ App.prototype.getDevices = function(device_type, callback){
 		return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
 	}, 5000);
 }
-
-App.prototype.poll = function(){
-	
-}

@@ -16,7 +16,7 @@ module.exports = {
 	init: function( devices_homey, callback ){
 		plugwise = new Plugwise;
 		
-		if(devices_homey.length > 0) {
+		if(devices_homey.filter(function(x) { return x.id.indexOf('smile') > -1 }).length > 0) {
 			plugwise.getDevices(devices_homey, 'smile', function(result){
 				devices = result;
 				callback();
