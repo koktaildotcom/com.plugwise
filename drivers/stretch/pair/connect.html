@@ -20,14 +20,8 @@
 		if(result === false){
 			alert("Couldn't add the device. Password invalid.");
 			Homey.showView('authenticate');
-		} else {			
-			alert("Found something nice.");
-			/*Homey.emit('list_appliances', { stretch }, function( res ){
-				if( result === true ) {
-					Homey.setTitle( __('pair.list.stretch.title') );
-				}
-				Homey.showView('list_devices');
-			});*/
+		} else {
+			Homey.showView('list_appliances');
 		}
 	});
 </script>

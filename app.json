@@ -1,6 +1,6 @@
 {
 	"id": "com.plugwise",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"compatibility": ">=0.1.0",
 	"name": {
 		"en": "Plugwise"
@@ -20,6 +20,7 @@
 				"en": "Anna"
 			},
 			"class": "thermostat",
+			"icon": "/assets/icon.svg",
 			"capabilities": [ "target_temperature", "measure_temperature" ],
 			"pair": [
 					{
@@ -48,7 +49,7 @@
 			"name": {
 				"en": "Stretch"
 			},
-			"class": "onoff",
+			"class": "socket",
 			"capabilities": [ "onoff" ],
 			"pair": [
 					{
@@ -71,14 +72,7 @@
 						"id": "connect"
 					},
 					{
-						"id": "list_appliances",
-				        "template": "list_devices_singular",
-				        "navigation": {
-				          "next": "adddevice"
-				        }
-					},
-					{
-						"id": "adddevice"
+						"id": "list_appliances"
 					}
 			]
 		}

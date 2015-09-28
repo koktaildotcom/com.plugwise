@@ -1,18 +1,13 @@
+/* global Homey */
 "use strict";
   
 var mdns = require('mdns-js');
 var browser = mdns.createBrowser(mdns.tcp("plugwise"));
 var devices = [];
-	
-function App() 
-{
-	
-}
 
-module.exports = App;
+var App = module.exports;
 
-App.prototype.init = function(){
-	
+App.init = function(){
 	browser.on('ready', function () {
 		browser.discover();
 	});
@@ -22,8 +17,8 @@ App.prototype.init = function(){
 	});
 }
 
-App.prototype.getDevices = function(device_type, callback){
+App.getDevices = function(device_type, callback){
 	setTimeout(function() {
 		return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
-	}, 5000);
+	}, 10000);
 }

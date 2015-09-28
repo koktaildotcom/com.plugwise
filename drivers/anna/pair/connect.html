@@ -16,21 +16,19 @@
 	
 	var smile = window.found_devices[ window.selected_devices[0] ].data;
 		
-	Homey.emit('connect', { smile }, function( result ){
+	Homey.emit('connect', { smile }, function( err, result ){
 		if(result === false){
 			alert("Couldn't add the device. Password invalid.");
 			Homey.showView('authenticate');
 		} else {			
-			console.log(result[0].id);
-			
 			Homey.addDevice({
 			    data: {
 			        id: smile.id,
 					anna: result[0].id,
 					password: smile.password					
 			    },
-			    name: smile.name
-			}, function( result ){
+			    name: result[0].name
+			}, function( err, result ){
 			    Homey.done();
 			});
 		}
