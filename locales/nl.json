@@ -5,6 +5,24 @@
 		},
 		"list": {
 			"title": "De volgende Anna Thermostaten zijn gevonden:"
+		},
+		"list": {
+			"smile": {
+				"title": "De volgende Smile bridges zijn gevonden:"
+			},
+			"anna":{
+				"title": "De volgende Anna Thermostaten zijn gevonden:"
+			}
+		},
+		"authenticate": {
+			"smile": {
+				"title": "Vul je Smile bridges wachtwoord in"
+			}
+		},
+		"connect": {
+			"smile": {
+				"title": "Valideer je wachtwoord met Anna"
+			}
 		}
 	}
 }
