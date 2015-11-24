@@ -1,16 +1,25 @@
 {
 	"id": "com.plugwise",
 	"version": "0.2.1",
-	"compatibility": ">=0.1.0",
+	"compatibility": "0.x || 1.x",
+	"category": "climate",
 	"name": {
-		"en": "Plugwise"
+		"en": "Plugwise",
+		"nl": "Plugwise"
 	},
 	"description": {
-		"en": "Connect Homey with your Plugwise devices to manage your energy consumption throughout your house"
+		"en": "Connect Homey with your Plugwise devices to manage your energy consumption throughout your house",
+		"en": "Verbind Homey met je Plugwise apparaten om stoomgebruik te meten"
 	},
 	"author": {
-		"name": "Sebastiaan den Boer",
-		"website": "http://www.sebastiaandenboer.com"
+		"name": "Freek Boelders",
+		"email": "freek@athom.nl"
+	},
+	"images": {
+    	"large": "./assets/images/large.jpg",
+    	"small": "./assets/images/small.jpg"
+	},
+		"dependencies": {
 	},
 	"permissions": [],
 	"drivers": [
@@ -19,6 +28,10 @@
 			"name": {
 				"en": "Anna"
 			},
+			"images": {
+		        "large": "./drivers/anna/assets/images/large.jpg",
+		        "small": "./drivers/anna/assets/images/small.jpg"
+		    },
 			"class": "thermostat",
 			"icon": "/assets/icon.svg",
 			"capabilities": [ "target_temperature", "measure_temperature" ],
@@ -49,6 +62,10 @@
 			"name": {
 				"en": "Stretch"
 			},
+			"images": {
+		        "large": "./drivers/stretch/assets/images/large.jpg",
+		        "small": "./drivers/stretch/assets/images/small.jpg"
+		    },
 			"class": "socket",
 			"capabilities": [ "onoff" ],
 			"pair": [
