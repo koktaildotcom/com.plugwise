@@ -14,6 +14,8 @@ var devices = [];
 module.exports = {
         
 	init: function( devices_homey, callback ){
+		Homey.log("Anna driver started");
+		
 		plugwise = new Plugwise;		
 		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('smile') > -1 });
 				
@@ -28,7 +30,7 @@ module.exports = {
 		} else {
 			callback();
 		}
-		
+
 		pollTemperature();		
 	},
 	
@@ -64,39 +66,39 @@ module.exports = {
 		}
 	},
 	
-	pair: {
-		start: function(callback, event, data){
+	pair: function (socket) {
+		socket.on ( "start", function( data, callback ){
 			plugwise.find('smile', function(plugwise_devices){
 				smiles = [];
 				
 				plugwise_devices.forEach(function(element) {
 					smiles.push({
 						data: {
-							id				: element.host, //SSID
-							ip				: element.addresses[0], //IP
-							name			: 'smile' //TYPE
+							id: 	element.host, //SSID
+							ip: 	element.addresses[0], //IP
+							name: 	'smile' //TYPE
 						},
-						name				: element.host
+						name: 		element.host
 					});
 				}, this);
 				
 				if(smiles.length > 0){
-					callback(true);
+					callback(null, true);
 				} else {
-					callback(false);
+					callback(null, false);
 				}
 			});
-		},
+		}),
 	
-		list_devices: function(callback, event, data) {
-			callback(smiles);
-		},
+		socket.on ( "list_devices", function( data, callback ){
+			callback(null, smiles);
+		}),
 		
-		authenticate: function(callback, event, data ) {
-			callback(true);
-		},
+		socket.on ( "authenticate", function( data, callback ){
+			callback(null, true);
+		}),
 		
-		connect: function( callback, event, data ) {
+		socket.on ( "connect", function( data, callback ){
 			plugwise.findDevices(data.smile, function(result) {
 				
 				var obj = {
@@ -107,9 +109,9 @@ module.exports = {
 				}
 				
 				devices.push(obj);
-				callback(result);
+				callback(null, result);
 			});
-		},
+		})
 	}
 }
 

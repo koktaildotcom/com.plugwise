@@ -7,6 +7,8 @@ var devices = [];
 var self = module.exports = {
 
 	init: function () {
+		Homey.log("Plugwise app started");
+
 		browser.on('ready', function () {
 			browser.discover();
 		});
@@ -16,7 +18,8 @@ var self = module.exports = {
 		});
 	},
 
-	getDevices: function() {
+	getDevices: function(devices, device_type, callback) {
+		console.log(arguments);
 		setTimeout(function() {
 			return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
 		}, 10000);

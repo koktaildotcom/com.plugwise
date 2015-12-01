@@ -15,7 +15,9 @@ var devices = [];
 
 module.exports = {
         
-	init: function( devices_homey, callback ){		
+	init: function( devices_homey, callback ){
+		Homey.log("Stretch driver started");
+
 		plugwise = new Plugwise;		
 		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('stretch') > -1 });
 				
@@ -59,43 +61,43 @@ module.exports = {
 		}
 	},
 	
-	pair: {	
-		start: function( callback, event, data ) {
+	pair: function (socket) {
+		socket.on ( "start", function( data, callback ){
 			plugwise.find('stretch', function(plugwise_devices){
 				stretches = [];
 				list_appliance = false;
 				
 				plugwise_devices.forEach(function(element) {
 					stretches.push({	
-						data: {					
-							id				: element.host, //SSID
-							ip				: element.addresses[0], //IP
-							name			: 'stretch' //TYPE
-						}, 
-						name				: element.host
+						data: {
+							id: 	element.host, //SSID
+							ip: 	element.addresses[0], //IP
+							name: 	'stretch' //TYPE
+						},
+						name: 		element.host
 					});
 				}, this);
 				
 				if(stretches.length > 0){
-					callback(true);
+					callback(null, true);
 				} else {
-					callback(false);
+					callback(null, false);
 				}
 			});
-		},
+		}),
 		
-		list_devices: function(callback, event, data) {
+		socket.on ( "list_devices", function( data, callback ){
 			if(list_appliance == true)
-				return callback(appliances);
+				return callback(null, appliances);
 				
-			return callback(stretches);
-		},
+			return callback(null, stretches);
+		}),
 		
-		authenticate: function(callback, event, data) {
-			callback(true);
-		},
+		socket.on ( "authenticate", function( data, callback ){
+			callback(null, true);
+		}),
 		
-		connect: function(callback, event, data) {
+		socket.on ( "connect", function( data, callback ){
 			plugwise.findDevices(data.stretch, function(result) {
 				result.forEach(function(element) {
 					appliances.push({
@@ -106,16 +108,15 @@ module.exports = {
 						name				: element.name
 					});
 				}, this);
-				callback(result);
+				callback(null, result);
 			});
-		},
+		}),
 		
-		list_appliances: function(callback, event, data) {
-			callback(appliances);
-		},
+		socket.on ( "list_appliances", function( data, callback ){
+			callback(null, appliances);
+		}),
 		
-		add_device: function(callback, event, data){
-			
+		socket.on ( "add_device", function( data, callback ){
 			var obj = {
 				'id' : data.stretch.id,
 				'stretch' : data.device.data.id,
@@ -123,8 +124,8 @@ module.exports = {
 				'ip' : data.stretch.ip,
 			}
 			devices.push(obj);
-			callback(true);
-		}
+			callback(null, true);
+		})
 	}	
 }
 
