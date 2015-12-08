@@ -1,22 +1,9 @@
-<head>
-  <link rel="stylesheet" href="./assets/style.css">
-</head>
-
-<body>
-	<center>
-		<div class="cssload-container">
-			<div class="cssload-item cssload-moon"></div>
-		</div>
-			<h1>one moment...</h1>
-	</center>
-</body>
-	
 <script type="text/javascript">
-    Homey.setTitle( __('pair.search.smile.title') );
+    Homey.setTitle( __('pair.start.smile.title') );
 	
     Homey.emit('start', {}, function( result ){
 		if( result === true ) {
-			Homey.setTitle( __('pair.list.smile.title') );
+			
 		}
 		Homey.showView('list_devices');
 	});

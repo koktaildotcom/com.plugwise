@@ -47,13 +47,7 @@
 				        }
 					},
 					{
-						"id": "authenticate",
-						"navigation": {
-							"next": "connect"
-						}
-					},
-					{
-						"id": "connect"
+						"id": "authenticate"
 					}
 			]
 		},
@@ -80,16 +74,7 @@
 				        }
 					},
 					{
-						"id": "authenticate",
-						"navigation": {
-							"next": "connect"
-						}
-					},
-					{
-						"id": "connect"
-					},
-					{
-						"id": "list_appliances"
+						"id": "authenticate"
 					}
 			]
 		}

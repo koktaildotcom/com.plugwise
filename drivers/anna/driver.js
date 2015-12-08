@@ -99,17 +99,21 @@ module.exports = {
 		}),
 		
 		socket.on ( "connect", function( data, callback ){
-			plugwise.findDevices(data.smile, function(result) {
-				
-				var obj = {
-					'id' : data.smile.id,
-					'anna' : result[0].id,
-					'password' : data.smile.password,
-					'ip' : data.smile.ip,
+			plugwise.findDevices(data.smile, function(err, result) {
+				console.log(arguments);
+				if (err) {
+					callback (err, null);
+				} else {
+					var device = {
+						'id' : data.smile.id,
+						'anna' : result[0].id,
+						'password' : data.smile.password,
+						'ip' : data.smile.ip,
+					}
+
+					devices.push(device);
+					callback(null, result);
 				}
-				
-				devices.push(obj);
-				callback(null, result);
 			});
 		})
 	}

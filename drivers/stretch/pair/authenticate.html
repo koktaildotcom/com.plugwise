@@ -1,14 +1,48 @@
 <body>
-	<center>
-		<input type="text" id="pswd" onkeyup="updatePassword()" style="border:1px solid #000000">
-	</center>
+
+	<p data-i18n="pair.auth.stretch.find_id"></p>
+	<img src="./assets/find_stretch_id.jpg" />
+	<br/>
+
+	<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
+		<div class="form-group">
+		    <label for="password" data-i18n="pair.auth.stretch.id"></label>
+		    <input type="text" name="password" id="password" placeholder="" />
+		</div>
+
+		<div class="form-group">
+		    <input type="submit" value="Login" />
+		</div>
+	</form>
+
 </body>
 	
 <script type="text/javascript">
-    Homey.setTitle( __('pair.authenticate.stretch.title') );
-	var password = '';
+    Homey.setTitle( __('pair.auth.stretch.title') );
 	
-	function updatePassword(){
-		window.found_devices[ window.selected_devices[0] ].data.password = document.getElementById('pswd').value;
+	function getForm(){
+		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
+
+		var stretch = window.found_devices[ window.selected_devices[0] ].data;
+
+		console.log('stretch', stretch);
+		
+		Homey.emit('connect', { stretch }, function( err, result ){
+			console.log('arguments', arguments);
+			if (err){
+				alert("__('pair.auth.stretch.wrong_id')");
+			} else {			
+				Homey.addDevice({
+				    data: {
+				        id: stretch.id,
+						stretch: result[0].id,
+						password: stretch.password					
+				    },
+				    name: result[0].name
+				}, function( err, result ){
+				    Homey.done();
+				});
+			}
+		});
 	}
 </script>

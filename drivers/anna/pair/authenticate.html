@@ -1,14 +1,48 @@
 <body>
-	<center>
-		<input type="text" id="pswd" onkeyup="updatePassword()" style="border:1px solid #000000">
-	</center>
+
+	<p data-i18n="pair.auth.smile.find_id"></p>
+	<img src="./assets/find_smile_id.jpg" />
+	<br/>
+
+	<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
+		<div class="form-group">
+		    <label for="password" data-i18n="pair.auth.smile.id"></label>
+		    <input type="text" name="password" id="password" placeholder="" />
+		</div>
+
+		<div class="form-group">
+		    <input type="submit" value="Login" />
+		</div>
+	</form>
+
 </body>
 	
 <script type="text/javascript">
-    Homey.setTitle( __('pair.authenticate.smile.title') );
-	var password = '';
+    Homey.setTitle( __('pair.auth.smile.title') );
 	
-	function updatePassword(){
-		window.found_devices[ window.selected_devices[0] ].data.password = document.getElementById('pswd').value;
+	function getForm(){
+		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
+
+		var smile = window.found_devices[ window.selected_devices[0] ].data;
+
+		console.log('smile', smile);
+		
+		Homey.emit('connect', { smile }, function( err, result ){
+			console.log('arguments', arguments);
+			if (err){
+				alert("__('pair.auth.smile.wrong_id')");
+			} else {			
+				Homey.addDevice({
+				    data: {
+				        id: smile.id,
+						anna: result[0].id,
+						password: smile.password					
+				    },
+				    name: result[0].name
+				}, function( err, result ){
+				    Homey.done();
+				});
+			}
+		});
 	}
 </script>

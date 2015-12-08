@@ -1,29 +1,25 @@
 {
 	"pair": {
-		"search": {
+		"start": {
 			"smile": {
 				"title": "Looking for your Smile bridges..."
 			},
-			"anna": {
-				"title": "Looking for your Anna Thermostat..."
+			"stretch": {
+				"title": "Looking for your Plugwise devices..."
 			}
 		},
-		"list": {
+		"auth": {
 			"smile": {
-				"title": "We found these Smile bridges:"
+				"title": "Please enter the Smile ID",
+				"find_id": "You can find the Smile ID on the backside of your Smile-device.",
+				"id": "Smile ID:",
+				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a word containing 8 lowercase letters."
 			},
-			"anna":{
-				"title": "We found these Anna Thermostats:"
-			}
-		},
-		"authenticate": {
-			"smile": {
-				"title": "Please enter your Smile bridge password"
-			}
-		},
-		"connect": {
-			"smile": {
-				"title": "Validating your password with Anna"
+			"stretch": {
+				"title": "Please enter the Plugwise ID",
+				"find_id": "You can find the Plugwise ID on the frontside of your Plugwise-device.",
+				"id": "Stretch ID:",
+				"wrong_id": "You entered a wrong Plugwise ID, please try again. The Plugwise ID is a word containing 8 lowercase letters."
 			}
 		}
 	}

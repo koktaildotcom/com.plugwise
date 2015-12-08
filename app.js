@@ -10,18 +10,22 @@ var self = module.exports = {
 		Homey.log("Plugwise app started");
 
 		browser.on('ready', function () {
+			console.log('Ready');
 			browser.discover();
 		});
 
 		browser.on('update', function (data) {
 			devices.push(data);
+			console.log('devices', devices)
 		});
 	},
 
-	getDevices: function(devices, device_type, callback) {
-		console.log(arguments);
+	getDevices: function(device_type, callback) {
+		console.log('devices', devices)
+		console.log('arguments', arguments);
+		
 		setTimeout(function() {
 			return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
-		}, 10000);
+		}, 1000); //Wait 1 sec to make sure devices is ready
 	}
 }

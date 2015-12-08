@@ -98,17 +98,21 @@ module.exports = {
 		}),
 		
 		socket.on ( "connect", function( data, callback ){
-			plugwise.findDevices(data.stretch, function(result) {
-				result.forEach(function(element) {
-					appliances.push({
-						data: {
-							id				: element.id, //STRETCH APPLIANCE ID
-							name			: 'appliance'
-						},
-						name				: element.name
-					});
-				}, this);
-				callback(null, result);
+			plugwise.findDevices(data.stretch, function(err, result) {
+				console.log(arguments);
+				if (err) {
+					callback (err, null);
+				} else {
+					var device = {
+						'id' : data.stretch.id,
+						'stretch' : result[0].id,
+						'password' : data.stretch.password,
+						'ip' : data.stretch.ip,
+					}
+
+					devices.push(device);
+					callback(null, result);
+				}
 			});
 		}),
 		
