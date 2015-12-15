@@ -16,16 +16,22 @@ var self = module.exports = {
 
 		browser.on('update', function (data) {
 			devices.push(data);
-			console.log('devices', devices)
+			//console.log('devices', devices)
 		});
 	},
 
-	getDevices: function(device_type, callback) {
-		console.log('devices', devices)
-		console.log('arguments', arguments);
-		
-		setTimeout(function() {
-			return callback(devices.filter(function(x) { return x.txt[0].indexOf(device_type) > -1 }));
-		}, 1000); //Wait 1 sec to make sure devices is ready
+	getDevices: function(device_type, callback) {		
+		console.log("DEVICES:", devices);
+		return callback (
+			devices.filter(
+				function(x) { 
+					if (x.txt != null) { //If txt exists (so it a device we are interested in)
+						return x.txt[0].indexOf(device_type) > -1
+					} else {
+						return false;
+					}
+				}
+			)
+		)
 	}
 }

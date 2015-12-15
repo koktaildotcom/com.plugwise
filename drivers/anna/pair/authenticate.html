@@ -30,7 +30,7 @@
 		Homey.emit('connect', { smile }, function( err, result ){
 			console.log('arguments', arguments);
 			if (err){
-				alert("__('pair.auth.smile.wrong_id')");
+				alert(__('pair.auth.smile.wrong_id'));
 			} else {			
 				Homey.addDevice({
 				    data: {

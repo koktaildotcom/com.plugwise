@@ -1,27 +1,25 @@
 {
 	"pair": {
-		"search": {
-			"title": "Zoeken naar je Anna Thermostaat..."
-		},
-		"list": {
-			"title": "De volgende Anna Thermostaten zijn gevonden:"
-		},
-		"list": {
+		"start": {
 			"smile": {
-				"title": "De volgende Smile bridges zijn gevonden:"
+				"title": "Aan het zoeken naar Smile bridges..."
 			},
-			"anna":{
-				"title": "De volgende Anna Thermostaten zijn gevonden:"
+			"stretch": {
+				"title": "Aan het zoeken naar Plugwise apparaten..."
 			}
 		},
-		"authenticate": {
+		"auth": {
 			"smile": {
-				"title": "Vul je Smile bridges wachtwoord in"
-			}
-		},
-		"connect": {
-			"smile": {
-				"title": "Valideer je wachtwoord met Anna"
+				"title": "Vul het Smile ID in",
+				"find_id": "Je kan het Smile ID vinden aan de achterkant van je Smile-apparaat.",
+				"id": "Smile ID:",
+				"wrong_id": "Je hebt een verkeerd Smile ID ingevuld, probeer het opnieuw. Het Smile ID is een woord bestaande uit 8 kleine letters."
+			},
+			"stretch": {
+				"title": "Vul het Stretch ID in",
+				"find_id": "Je kan het Stretch ID aan de voorkant van je Plugwise-apparaat.",
+				"id": "Stretch ID:",
+				"wrong_id": "Je hebt een verkeerd Stretch ID ingevuld, probeer het opnieuw. Het Stretch ID is een woord bestaande uit 8 kleine letters"
 			}
 		}
 	}

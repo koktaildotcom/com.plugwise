@@ -21,6 +21,7 @@ module.exports = {
 				
 		if(devices_smile.length > 0) {
 			plugwise.getDevices(devices_smile, 'smile', function(result){
+				console.log("THESE ARE THE ARGUMENTS:", arguments);
 				if(result === false)
 					return callback();
 				
@@ -134,6 +135,7 @@ function setTarget(device, input, callback) {
 };
 
 function getTarget(device, callback) {
+	//console.log("GET TARGET DEVICES:", devices);
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){

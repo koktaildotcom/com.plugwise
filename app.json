@@ -26,7 +26,7 @@
 		{
 			"id": "anna",
 			"name": {
-				"en": "Anna"
+				"en": "Anna (Smile)"
 			},
 			"images": {
 		        "large": "./drivers/anna/assets/images/large.jpg",
@@ -54,7 +54,7 @@
 		{
 			"id": "stretch",
 			"name": {
-				"en": "Stretch"
+				"en": "Plugwise (Stretch)"
 			},
 			"images": {
 		        "large": "./drivers/stretch/assets/images/large.jpg",

@@ -13,13 +13,13 @@
 				"title": "Please enter the Smile ID",
 				"find_id": "You can find the Smile ID on the backside of your Smile-device.",
 				"id": "Smile ID:",
-				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a word containing 8 lowercase letters."
+				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters."
 			},
 			"stretch": {
-				"title": "Please enter the Plugwise ID",
-				"find_id": "You can find the Plugwise ID on the frontside of your Plugwise-device.",
+				"title": "Please enter the Stretch ID",
+				"find_id": "You can find the Stretch ID on the frontside of your Plugwise-device.",
 				"id": "Stretch ID:",
-				"wrong_id": "You entered a wrong Plugwise ID, please try again. The Plugwise ID is a word containing 8 lowercase letters."
+				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters."
 			}
 		}
 	}
