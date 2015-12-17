@@ -16,12 +16,13 @@ var self = module.exports = {
 
 		browser.on('update', function (data) {
 			devices.push(data);
-			//console.log('devices', devices)
+			//console.log('devices', devices);
+			//console.log('data', data);
 		});
 	},
 
 	getDevices: function(device_type, callback) {		
-		console.log("DEVICES:", devices);
+		//console.log("DEVICES:", devices);
 		return callback (
 			devices.filter(
 				function(x) { 

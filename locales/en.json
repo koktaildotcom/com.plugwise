@@ -19,7 +19,10 @@
 				"title": "Please enter the Stretch ID",
 				"find_id": "You can find the Stretch ID on the frontside of your Plugwise-device.",
 				"id": "Stretch ID:",
-				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters."
+				"ssid": "ssid",
+				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters.",
+				"add_device": "Adding the device(s)",
+				"unavailable": "This device is unavailable"
 			}
 		}
 	}

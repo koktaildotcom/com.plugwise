@@ -9,7 +9,10 @@
 		    <label for="password" data-i18n="pair.auth.stretch.id"></label>
 		    <input type="text" name="password" id="password" placeholder="" />
 		</div>
-
+		<div class="form-group">
+		    <label for="ssid" data-i18n="pair.auth.stretch.ssid"></label>
+		    <input type="text" name="ssid" id="ssid" placeholder="" />
+		</div>
 		<div class="form-group">
 		    <input type="submit" value="Login" />
 		</div>
@@ -21,18 +24,22 @@
     Homey.setTitle( __('pair.auth.stretch.title') );
 	
 	function getForm(){
-		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
+		var ssid = document.forms["form"]["ssid"].value;
+		var password = document.forms["form"]["password"].value;
 
-		var stretch = window.found_devices[ window.selected_devices[0] ].data;
+		var stretch = {ssid: ssid, password: password}
 
 		console.log('stretch', stretch);
 		
 		Homey.emit('connect', { stretch }, function( err, result ){
 			console.log('arguments', arguments);
 			if (err){
-				alert("__('pair.auth.stretch.wrong_id')");
-			} else {			
-				Homey.addDevice({
+				alert(__('pair.auth.stretch.wrong_id'));
+			} else {
+			Homey.showView('list_devices');
+			//Homey.showView('list_appliances');
+					
+				/*Homey.addDevice({
 				    data: {
 				        id: stretch.id,
 						stretch: result[0].id,
@@ -41,7 +48,7 @@
 				    name: result[0].name
 				}, function( err, result ){
 				    Homey.done();
-				});
+				});*/
 			}
 		});
 	}

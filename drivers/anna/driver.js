@@ -14,7 +14,10 @@ var devices = [];
 module.exports = {
         
 	init: function( devices_homey, callback ){
-		Homey.log("Anna driver started");
+		Homey.log("Anna driver started", devices_homey);
+
+		devices = devices_homey;
+		Homey.log('Anna driver devices', devices);
 		
 		plugwise = new Plugwise;		
 		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('smile') > -1 });
@@ -109,10 +112,11 @@ module.exports = {
 						'id' : data.smile.id,
 						'anna' : result[0].id,
 						'password' : data.smile.password,
-						'ip' : data.smile.ip,
+						'ip' : data.smile.ip
 					}
 
 					devices.push(device);
+					console.log("I PUSHED THE FOLLOWING DEVICES: ", devices);
 					callback(null, result);
 				}
 			});
@@ -124,7 +128,10 @@ function setTarget(device, input, callback) {
 	validate(input, function(temperature){		
 		var smile = devices.filter(function(x) { return x.id === device.id })[0];
 		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna + '/thermostat';
-		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(){
+		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
+			if (error)
+				return error;
+				module.exports.setUnavailable( device, __('error.unavailable'), callback );
 			
 			module.exports.realtime({
 				id: device.id
@@ -135,10 +142,14 @@ function setTarget(device, input, callback) {
 };
 
 function getTarget(device, callback) {
-	//console.log("GET TARGET DEVICES:", devices);
+	console.log("GET TARGET DEVICES:", devices);
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
+		if (error)
+			return error;
+			module.exports.setUnavailable( device, __('error.unavailable'), callback );
+
 	    var doc = XML.parse(body);
 		var temperature = doc.appliance.actuators.thermostat.setpoint;
 		
@@ -153,6 +164,10 @@ function measureTemp(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
+		if (error)
+			return error;
+			module.exports.setUnavailable( device, __('error.unavailable'), callback );
+
 	    var doc = XML.parse(body);
 		var temp = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
 		callback(temp.period.measurement._Data);
@@ -179,5 +194,5 @@ function pollTemperature(){
 		}, this);
 	}
 	catch(err) { }
-   	setTimeout(pollTemperature, 3000);
+   	//setTimeout(pollTemperature, 3000);
 }

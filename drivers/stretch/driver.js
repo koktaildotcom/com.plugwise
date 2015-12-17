@@ -16,22 +16,20 @@ var devices = [];
 module.exports = {
         
 	init: function( devices_homey, callback ){
-		Homey.log("Stretch driver started");
+		Homey.log("Stretch driver started", devices_homey);
+
+		devices = devices_homey;
 
 		plugwise = new Plugwise;		
-		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('stretch') > -1 });
-				
-		if(devices_smile.length > 0) {
-			plugwise.getDevices(devices_smile, 'stretch', function(result){
+
+			plugwise.getDevices(devices_homey, 'stretch', function(result){
 				if(result === false)
+					console.log("I am in!", result);
 					return callback();
 				
 				devices = result;				
 				callback();
 			});
-		} else {
-			callback();
-		}
 		
 		pollToggles();		
 	},
@@ -49,6 +47,7 @@ module.exports = {
 	capabilities: {
 		onoff: {
 			get: function( device, callback ){
+				console.log("set Unavailable");
 				requestState( device, function(result) {
 					return callback(result);
 				});
@@ -63,6 +62,7 @@ module.exports = {
 	
 	pair: function (socket) {
 		socket.on ( "start", function( data, callback ){
+			console.log("pair: start");
 			plugwise.find('stretch', function(plugwise_devices){
 				stretches = [];
 				list_appliance = false;
@@ -87,47 +87,49 @@ module.exports = {
 		}),
 		
 		socket.on ( "list_devices", function( data, callback ){
-			if(list_appliance == true)
-				return callback(null, appliances);
-				
-			return callback(null, stretches);
+			return callback(null, appliances);
 		}),
 		
 		socket.on ( "authenticate", function( data, callback ){
+			console.log("pair: authenticate");
 			callback(null, true);
 		}),
 		
 		socket.on ( "connect", function( data, callback ){
-			plugwise.findDevices(data.stretch, function(err, result) {
-				console.log(arguments);
-				if (err) {
-					callback (err, null);
-				} else {
-					var device = {
-						'id' : data.stretch.id,
-						'stretch' : result[0].id,
-						'password' : data.stretch.password,
-						'ip' : data.stretch.ip,
-					}
+			console.log("pair: connect");
+			stretches.forEach(function(stretch) {
 
-					devices.push(device);
-					callback(null, result);
+				var combined_stretch = {
+					id: stretch.data.id,
+					ip: stretch.data.ip,
+					name: stretch.data.name,
+					password: data.stretch.password,
+					ssid: data.stretch.ssid
 				}
+
+				plugwise.findDevices(combined_stretch, function(err, result) {
+					result.forEach(function(element) {
+						appliances.push({
+							data: {
+								id				: element.id, //STRETCH APPLIANCE ID
+								name			: element.name,
+								ip  			: stretch.data.ip,
+								password        : data.stretch.password, 
+							},
+							name				: element.name
+						});
+					}, this);
+					callback(null, result);
+				});
 			});
 		}),
 		
-		socket.on ( "list_appliances", function( data, callback ){
-			callback(null, appliances);
-		}),
-		
 		socket.on ( "add_device", function( data, callback ){
-			var obj = {
-				'id' : data.stretch.id,
-				'stretch' : data.device.data.id,
-				'password' : data.stretch.password,
-				'ip' : data.stretch.ip,
-			}
-			devices.push(obj);
+			console.log("pair: add_device");
+			console.log(data);
+
+			devices.push(data.data);
+
 			callback(null, true);
 		})
 	}	
@@ -144,7 +146,7 @@ function toggleOnOff(device, value, callback) {
 	}
 	
 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
-	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.stretch + '/relay';
+	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id + '/relay';
 	request({ url: url, method: 'PUT', body : '<relay><state>' + toggle + '</state></relay>', headers: {'Content-Type': 'text/xml'}}, function(){
 		
 		module.exports.realtime({
@@ -157,13 +159,22 @@ function toggleOnOff(device, value, callback) {
 
 function requestState(device, callback) {
 	
+	console.log('device.id', device.id);
+
+	console.log('devices', devices);
+
 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
+
+	console.log('relay', relay);
 	
-	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.stretch;
+	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id;
 	request({ url: url, method: 'GET' }, function(error, response, body){
 		if(error) {
 				console.log("Could not get external location." );
-		} else{
+				module.exports.setUnavailable( device, __('error.unavailable'), callback );
+		} else {
+			module.exports.setAvailable( device, callback );
+
 		    var doc = XML.parse(body);
 			
 			module.exports.realtime({
@@ -184,5 +195,5 @@ function pollToggles(){
 		}, this);
 	}
 	catch(err) { }
-   	setTimeout(pollToggles, 3000);
+   	//setTimeout(pollToggles, 3000);
 }

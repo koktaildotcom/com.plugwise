@@ -67,14 +67,18 @@
 						"id": "start"
 					},
 					{
+						"id": "authenticate"
+					},
+					{
 						"id": "list_devices",
-				        "template": "list_devices_singular",
+				        "template": "list_devices",
 				        "navigation": {
-				          "next": "authenticate"
+				          "next": "add_device"
 				        }
 					},
 					{
-						"id": "authenticate"
+						"id": "add_device",
+						"template": "add_devices"
 					}
 			]
 		}

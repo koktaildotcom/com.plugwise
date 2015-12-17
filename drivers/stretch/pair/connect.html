@@ -21,7 +21,20 @@
 			alert("Couldn't add the device. Password invalid.");
 			Homey.showView('authenticate');
 		} else {
-			Homey.showView('list_appliances');
+			Homey.emit('list_appliances', { }, function( err, result ){
+					alert("list_appliances");
+
+					//Homey.showView('list_appliances');
+					devices = result;
+					
+					result.forEach(function(entry) {
+						console.log(entry.name);
+						var x = document.getElementById("mySelect");
+						var option = document.createElement("option");
+						option.text = entry.name;
+						x.add(option);
+					});
+				});
 		}
 	});
 </script>
