@@ -2,9 +2,6 @@
     Homey.setTitle( __('pair.start.smile.title') );
 	
     Homey.emit('start', {}, function( result ){
-		if( result === true ) {
-			
-		}
 		Homey.showView('list_devices');
 	});
 </script>

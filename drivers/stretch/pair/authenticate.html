@@ -28,27 +28,12 @@
 		var password = document.forms["form"]["password"].value;
 
 		var stretch = {ssid: ssid, password: password}
-
-		console.log('stretch', stretch);
 		
 		Homey.emit('connect', { stretch }, function( err, result ){
-			console.log('arguments', arguments);
 			if (err){
 				alert(__('pair.auth.stretch.wrong_id'));
 			} else {
-			Homey.showView('list_devices');
-			//Homey.showView('list_appliances');
-					
-				/*Homey.addDevice({
-				    data: {
-				        id: stretch.id,
-						stretch: result[0].id,
-						password: stretch.password					
-				    },
-				    name: result[0].name
-				}, function( err, result ){
-				    Homey.done();
-				});*/
+				Homey.showView('list_devices');
 			}
 		});
 	}

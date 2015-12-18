@@ -16,11 +16,13 @@ var devices = [];
 module.exports = {
         
 	init: function( devices_homey, callback ){
-		Homey.log("Stretch driver started", devices_homey);
+		Homey.log("Stretch driver started");
 
 		devices = devices_homey;
 
-		plugwise = new Plugwise;		
+		plugwise = new Plugwise;
+
+		pollToggles();	
 
 			plugwise.getDevices(devices_homey, 'stretch', function(result){
 				if(result === false)
@@ -29,8 +31,7 @@ module.exports = {
 				devices = result;				
 				callback();
 			});
-		
-		pollToggles();		
+			
 	},
 		
 	deleted: function ( device_homey, callback ){
@@ -46,7 +47,6 @@ module.exports = {
 	capabilities: {
 		onoff: {
 			get: function( device, callback ){
-				console.log("set Unavailable");
 				requestState( device, function(result) {
 					return callback(result);
 				});
@@ -61,7 +61,6 @@ module.exports = {
 	
 	pair: function (socket) {
 		socket.on ( "start", function( data, callback ){
-			console.log("pair: start");
 			plugwise.find('stretch', function(plugwise_devices){
 				stretches = [];
 				list_appliance = false;
@@ -90,12 +89,10 @@ module.exports = {
 		}),
 		
 		socket.on ( "authenticate", function( data, callback ){
-			console.log("pair: authenticate");
 			callback(null, true);
 		}),
 		
 		socket.on ( "connect", function( data, callback ){
-			console.log("pair: connect");
 			stretches.forEach(function(stretch) {
 
 				var combined_stretch = {
@@ -107,28 +104,28 @@ module.exports = {
 				}
 
 				plugwise.findDevices(combined_stretch, function(err, result) {
-					result.forEach(function(element) {
-						appliances.push({
-							data: {
-								id				: element.id, //STRETCH APPLIANCE ID
-								name			: element.name,
-								ip  			: stretch.data.ip,
-								password        : data.stretch.password, 
-							},
-							name				: element.name
-						});
-					}, this);
-					callback(null, result);
+					if (err) {
+						callback (err, null);
+					} else {
+						result.forEach(function(element) {
+							appliances.push({
+								data: {
+									id				: element.id, //STRETCH APPLIANCE ID
+									name			: element.name,
+									ip  			: stretch.data.ip,
+									password        : data.stretch.password, 
+								},
+								name				: element.name
+							});
+						}, this);
+						callback(null, result);
+					}
 				});
 			});
 		}),
 		
 		socket.on ( "add_device", function( data, callback ){
-			console.log("pair: add_device");
-			console.log(data);
-
 			devices.push(data.data);
-
 			callback(null, true);
 		})
 	}	
@@ -157,31 +154,22 @@ function toggleOnOff(device, value, callback) {
 
 
 function requestState(device, callback) {
-	
-	console.log('device.id', device.id);
-
-	console.log('devices', devices);
 
 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
-
-	console.log('relay', relay);
 	
 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id;
 	request({ url: url, timeout: 2000, method: 'GET' }, function(error, response, body){
 		if (error) { //Could not find device, try to get the correct IP address
-			module.exports.setUnavailable( device, __('pair.auth.stretch.unavailable'), callback );
-			Homey.app.refreshIp('stretch', function(result){
-				if (result != []) {
+			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
+
+			Homey.app.refreshIp('smile', function(result){
+				if (result != false) { //If something found
 					devices.forEach(function(device) {
-						if (result.host == device.id) {
+						if (result.host == device.id && device.ip != result.address[0]) { //If matches the host and IP addresses are not the same
 							device.ip = result.address[0]; //Set new IP
+							module.exports.setAvailable( device, callback ); //And make it available again
 						}
 					}, this);
-
-					clearTimeout(Homey.app.refreshIp, 3000);
-					module.exports.setAvailable( device, callback );
-				} else {
-					setTimeout(Homey.app.refreshIp, 3000);
 				}
 			});
 			return error;
@@ -200,6 +188,7 @@ function requestState(device, callback) {
 };
 
 function pollToggles(){
+
 	try {
 		devices.forEach(function(element) {
 			requestState(element, function(callback) {
@@ -208,5 +197,5 @@ function pollToggles(){
 		}, this);
 	}
 	catch(err) { }
-   	//setTimeout(pollToggles, 3000);
+   	setTimeout(pollToggles, 30000); //30 sec
 }

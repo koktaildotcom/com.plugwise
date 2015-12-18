@@ -14,17 +14,18 @@ var devices = [];
 module.exports = {
         
 	init: function( devices_homey, callback ){
-		Homey.log("Anna driver started", devices_homey);
+		Homey.log("Anna driver started");
 
 		devices = devices_homey;
-		Homey.log('Anna driver devices', devices);
 		
-		plugwise = new Plugwise;		
+		plugwise = new Plugwise;
+
 		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('smile') > -1 });
+
+		pollTemperature();
 				
 		if(devices_smile.length > 0) {
 			plugwise.getDevices(devices_smile, 'smile', function(result){
-				console.log("THESE ARE THE ARGUMENTS:", arguments);
 				if(result === false)
 					return callback();
 				
@@ -34,8 +35,6 @@ module.exports = {
 		} else {
 			callback();
 		}
-
-		pollTemperature();		
 	},
 	
 	deleted: function ( device_homey, callback ){
@@ -104,7 +103,6 @@ module.exports = {
 		
 		socket.on ( "connect", function( data, callback ){
 			plugwise.findDevices(data.smile, function(err, result) {
-				console.log(arguments);
 				if (err) {
 					callback (err, null);
 				} else {
@@ -116,7 +114,6 @@ module.exports = {
 					}
 
 					devices.push(device);
-					console.log("I PUSHED THE FOLLOWING DEVICES: ", devices);
 					callback(null, result);
 				}
 			});
@@ -144,25 +141,22 @@ function setTarget(device, input, callback) {
 };
 
 function getTarget(device, callback) {
-	console.log("GET TARGET DEVICES:", devices);
+
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
+
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
-	console.log("URL:", url);
 	request({ url: url, timeout: 2000, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){ //Timout 2000 to make a quick time-out if not found
 		if (error) { //Could not find device, try to get the correct IP address
-			console.log("COULD NOT FOUND")
 			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
+
 			Homey.app.refreshIp('smile', function(result){
-				if (result != []) {
-					console.log("IF");
+				if (result != false) { //If something found
 					devices.forEach(function(device) {
-						if (result.host == device.id) {
+						if (result.host == device.id && device.ip != result.address[0]) { //If matches the host and IP addresses are not the same
 							device.ip = result.address[0]; //Set new IP
+							module.exports.setAvailable( device, callback ); //And make it available again
 						}
 					}, this);
-				} else {
-					console.log("ELSE");
-					module.exports.setAvailable( device, callback );
 				}
 			});
 			return error;
@@ -181,7 +175,9 @@ function getTarget(device, callback) {
 };
 
 function measureTemp(device, callback) {
+
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
+
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
 		if (error) {	
@@ -196,6 +192,7 @@ function measureTemp(device, callback) {
 }
 
 function validate(temperature, callback){
+
 	if(temperature > 30){
 		return callback(30);
 	}
@@ -207,6 +204,7 @@ function validate(temperature, callback){
 }
 
 function pollTemperature(){
+
 	try {
 		devices.forEach(function(element) {
 			getTarget(element, function(callback) {
@@ -215,5 +213,5 @@ function pollTemperature(){
 		}, this);
 	}
 	catch(err) { }
-   	//setTimeout(pollTemperature, 3000);
+   	setTimeout(pollTemperature, 30000); //30 sec
 }

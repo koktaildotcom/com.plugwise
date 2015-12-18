@@ -16,13 +16,10 @@ var self = module.exports = {
 
 		browser.on('update', function (data) {
 			devices.push(data);
-			//console.log('devices', devices);
-			//console.log('data', data);
 		});
 	},
 
 	getDevices: function(device_type, callback) {		
-		//console.log("DEVICES:", devices);
 		browser.discover();
 		return callback (
 			devices.filter(
@@ -41,12 +38,9 @@ var self = module.exports = {
 		console.log("refreshIp:", devices);
 		devices.filter(
 			function(x) { 
-				if (x.txt != null) { //If txt exists (so it a device we are interested in)
-					if (x.txt[0].indexOf(device_type) > -1) {
-						console.log('x', x);
-						console.log('x.addresses', x.addresses);
-						console.log('x.host', x.host);
-						callback({host: x.host, address: x.addresses});
+				if (x.txt != null) { //If txt exists (so it is a device we are interested in)
+					if (x.txt[0].indexOf(device_type) > -1) { //And the device type matches
+						callback({host: x.host, address: x.addresses}); //Callback the new host and ip-address
 					}
 				} else {
 					callback(false);

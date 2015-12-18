@@ -13,13 +13,17 @@
 				"title": "Vul het Smile ID in",
 				"find_id": "Je kan het Smile ID vinden aan de achterkant van je Smile-apparaat.",
 				"id": "Smile ID:",
-				"wrong_id": "Je hebt een verkeerd Smile ID ingevuld, probeer het opnieuw. Het Smile ID is een woord bestaande uit 8 kleine letters."
+				"wrong_id": "Je hebt een verkeerd Smile ID ingevuld, probeer het opnieuw. Het Smile ID is een woord bestaande uit 8 kleine letters.",
+				"unavailable": "Deze Anna thermostaat is niet beschikbaar"
 			},
 			"stretch": {
 				"title": "Vul het Stretch ID in",
 				"find_id": "Je kan het Stretch ID aan de voorkant van je Plugwise-apparaat.",
 				"id": "Stretch ID:",
-				"wrong_id": "Je hebt een verkeerd Stretch ID ingevuld, probeer het opnieuw. Het Stretch ID is een woord bestaande uit 8 kleine letters"
+				"ssid": "ssid",
+				"wrong_id": "Je hebt een verkeerd Stretch ID ingevuld, probeer het opnieuw. Het Stretch ID is een woord bestaande uit 8 kleine letters",
+				"add_device": "Apparaten aan het toevoegen",
+				"unavailable": "Dit Plugwise stopcontact is niet beschikbaar"
 			}
 		}
 	}

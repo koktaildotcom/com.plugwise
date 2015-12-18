@@ -1,10 +1,9 @@
 ### Plugwise App for Homey 
-This app adds support for Plugwise devices that allow you to monitor and manage the energy consumption in your home. Supported devices include:
-
+When you have this app, Homey can start to communication with all your Plugwise devices.
+You can adjust the temperature of your Anna Thermostat.
+Besides you can switch your Pluwise plugs and manage all the devices which are connected to these plugs.
 
 ---
 ##### Compatible devices:
-- Plugwise Home Stretch 2.0 (Circle/ Circle+)
-- Plugwise Smile (Anna) 
- 
-
+- Anna Thermostat (Smile)
+- Plugwise plugs (Stretch)

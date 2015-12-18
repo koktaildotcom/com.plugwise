@@ -24,11 +24,8 @@
 		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
 
 		var smile = window.found_devices[ window.selected_devices[0] ].data;
-
-		console.log('smile', smile);
 		
 		Homey.emit('connect', { smile }, function( err, result ){
-			console.log('arguments', arguments);
 			if (err){
 				alert(__('pair.auth.smile.wrong_id'));
 			} else {			

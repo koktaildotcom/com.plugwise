@@ -14,7 +14,7 @@
 				"find_id": "You can find the Smile ID on the backside of your Smile-device.",
 				"id": "Smile ID:",
 				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters.",
-				"unavailable": "This device is unavailable"
+				"unavailable": "This Anna thermostat is unavailable"
 			},
 			"stretch": {
 				"title": "Please enter the Stretch ID",
@@ -23,7 +23,7 @@
 				"ssid": "ssid",
 				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters.",
 				"add_device": "Adding the device(s)",
-				"unavailable": "This device is unavailable"
+				"unavailable": "This Plugwise plug is unavailable"
 			}
 		}
 	}
