@@ -24,7 +24,6 @@ module.exports = {
 
 			plugwise.getDevices(devices_homey, 'stretch', function(result){
 				if(result === false)
-					console.log("I am in!", result);
 					return callback();
 				
 				devices = result;				
@@ -168,10 +167,24 @@ function requestState(device, callback) {
 	console.log('relay', relay);
 	
 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id;
-	request({ url: url, method: 'GET' }, function(error, response, body){
-		if(error) {
-				console.log("Could not get external location." );
-				module.exports.setUnavailable( device, __('error.unavailable'), callback );
+	request({ url: url, timeout: 2000, method: 'GET' }, function(error, response, body){
+		if (error) { //Could not find device, try to get the correct IP address
+			module.exports.setUnavailable( device, __('pair.auth.stretch.unavailable'), callback );
+			Homey.app.refreshIp('stretch', function(result){
+				if (result != []) {
+					devices.forEach(function(device) {
+						if (result.host == device.id) {
+							device.ip = result.address[0]; //Set new IP
+						}
+					}, this);
+
+					clearTimeout(Homey.app.refreshIp, 3000);
+					module.exports.setAvailable( device, callback );
+				} else {
+					setTimeout(Homey.app.refreshIp, 3000);
+				}
+			});
+			return error;
 		} else {
 			module.exports.setAvailable( device, callback );
 

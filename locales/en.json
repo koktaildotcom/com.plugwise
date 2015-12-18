@@ -13,7 +13,8 @@
 				"title": "Please enter the Smile ID",
 				"find_id": "You can find the Smile ID on the backside of your Smile-device.",
 				"id": "Smile ID:",
-				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters."
+				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters.",
+				"unavailable": "This device is unavailable"
 			},
 			"stretch": {
 				"title": "Please enter the Stretch ID",

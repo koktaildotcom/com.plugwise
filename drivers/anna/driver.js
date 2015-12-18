@@ -129,14 +129,16 @@ function setTarget(device, input, callback) {
 		var smile = devices.filter(function(x) { return x.id === device.id })[0];
 		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna + '/thermostat';
 		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
-			if (error)
+			if (error) {
 				return error;
-				module.exports.setUnavailable( device, __('error.unavailable'), callback );
-			
-			module.exports.realtime({
-				id: device.id
-			}, 'target_temperature', temperature);
-			callback(temperature);
+				module.exports.setUnavailable( device, __('pair.stretch.unavailable'), callback );
+			} else {
+
+				module.exports.realtime({
+					id: device.id
+				}, 'target_temperature', temperature);
+				callback(temperature);
+			}
 		});
 	});	
 };
@@ -145,18 +147,36 @@ function getTarget(device, callback) {
 	console.log("GET TARGET DEVICES:", devices);
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
-	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
-		if (error)
+	console.log("URL:", url);
+	request({ url: url, timeout: 2000, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){ //Timout 2000 to make a quick time-out if not found
+		if (error) { //Could not find device, try to get the correct IP address
+			console.log("COULD NOT FOUND")
+			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
+			Homey.app.refreshIp('smile', function(result){
+				if (result != []) {
+					console.log("IF");
+					devices.forEach(function(device) {
+						if (result.host == device.id) {
+							device.ip = result.address[0]; //Set new IP
+						}
+					}, this);
+				} else {
+					console.log("ELSE");
+					module.exports.setAvailable( device, callback );
+				}
+			});
 			return error;
-			module.exports.setUnavailable( device, __('error.unavailable'), callback );
+		} else {
+			module.exports.setAvailable( device, callback );
 
-	    var doc = XML.parse(body);
-		var temperature = doc.appliance.actuators.thermostat.setpoint;
-		
-		module.exports.realtime({
-			id: device.id
-		}, 'target_temperature', temperature);
-		callback(temperature);
+		    var doc = XML.parse(body);
+			var temperature = doc.appliance.actuators.thermostat.setpoint;
+			
+			module.exports.realtime({
+				id: device.id
+			}, 'target_temperature', temperature);
+			callback(temperature);
+		}
 	});
 };
 
@@ -164,13 +184,14 @@ function measureTemp(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
-		if (error)
+		if (error) {	
 			return error;
-			module.exports.setUnavailable( device, __('error.unavailable'), callback );
+		} else {
 
 	    var doc = XML.parse(body);
 		var temp = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
 		callback(temp.period.measurement._Data);
+		}
 	});
 }
 

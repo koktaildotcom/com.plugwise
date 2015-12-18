@@ -23,6 +23,7 @@ var self = module.exports = {
 
 	getDevices: function(device_type, callback) {		
 		//console.log("DEVICES:", devices);
+		browser.discover();
 		return callback (
 			devices.filter(
 				function(x) { 
@@ -33,6 +34,24 @@ var self = module.exports = {
 					}
 				}
 			)
+		)
+	},
+
+	refreshIp: function(device_type, callback) {		
+		console.log("refreshIp:", devices);
+		devices.filter(
+			function(x) { 
+				if (x.txt != null) { //If txt exists (so it a device we are interested in)
+					if (x.txt[0].indexOf(device_type) > -1) {
+						console.log('x', x);
+						console.log('x.addresses', x.addresses);
+						console.log('x.host', x.host);
+						callback({host: x.host, address: x.addresses});
+					}
+				} else {
+					callback(false);
+				}
+			}
 		)
 	}
 }
