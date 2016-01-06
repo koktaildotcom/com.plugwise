@@ -1,6 +1,6 @@
 {
 	"id": "com.plugwise",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"compatibility": "0.x || 1.x",
 	"category": "appliances",
 	"name": {
@@ -12,9 +12,8 @@
 		"en": "Verbind Homey met je Plugwise apparaten om stoomgebruik te meten"
 	},
 	"author": {
-		"name": "Freek Boelders",
-		"email": "freek@athom.nl"
-	},
+    	"name": "Athom B.V."
+  	},
 	"images": {
     	"large": "./assets/images/large.jpg",
     	"small": "./assets/images/small.jpg"
@@ -81,7 +80,7 @@
 				        }
 					},
 					{
-						"id": "add_device",
+						"id": "add_devices",
 						"template": "add_devices"
 					}
 			]
