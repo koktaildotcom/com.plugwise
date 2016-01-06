@@ -11,7 +11,7 @@
 		"auth": {
 			"smile": {
 				"title": "Please enter the Smile ID",
-				"find_id": "You can find the Smile ID on the backside of your Smile-device.",
+				"find_id": "You can find the Smile ID and ssid on the backside of your Smile-device.",
 				"id": "Smile ID:",
 				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters.",
 				"unavailable": "This Anna thermostat is unavailable"

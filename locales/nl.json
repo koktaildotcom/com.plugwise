@@ -11,7 +11,7 @@
 		"auth": {
 			"smile": {
 				"title": "Vul het Smile ID in",
-				"find_id": "Je kan het Smile ID vinden aan de achterkant van je Smile-apparaat.",
+				"find_id": "Je kan het Smile ID en ssid vinden aan de achterkant van je Smile-apparaat.",
 				"id": "Smile ID:",
 				"wrong_id": "Je hebt een verkeerd Smile ID ingevuld, probeer het opnieuw. Het Smile ID is een woord bestaande uit 8 kleine letters.",
 				"unavailable": "Deze Anna thermostaat is niet beschikbaar"
