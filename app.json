@@ -4,12 +4,12 @@
 	"compatibility": "0.x || 1.x",
 	"category": "climate",
 	"name": {
-		"en": "Plugwise / Anna",
-		"nl": "Plugwise / Anna"
+		"en": "Plugwise & Anna",
+		"nl": "Plugwise & Anna"
 	},
 	"description": {
-		"en": "Connect Homey with your Plugwise devices to manage your energy consumption throughout your house",
-		"en": "Verbind Homey met je Plugwise apparaten om stoomgebruik te meten"
+		"en": "Connect Homey with Plugwise & Anna",
+		"en": "Verbind Homey met Plugwise & Anna"
 	},
 	"author": {
     	"name": "Athom B.V."
