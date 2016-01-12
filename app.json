@@ -1,11 +1,11 @@
 {
 	"id": "com.plugwise",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"compatibility": "0.x || 1.x",
-	"category": "appliances",
+	"category": "climate",
 	"name": {
-		"en": "Plugwise",
-		"nl": "Plugwise"
+		"en": "Plugwise / Anna",
+		"nl": "Plugwise / Anna"
 	},
 	"description": {
 		"en": "Connect Homey with your Plugwise devices to manage your energy consumption throughout your house",
