@@ -50,20 +50,20 @@ module.exports = {
 	capabilities: {
 		target_temperature: {
 			get: function( device, callback ){
-				getTarget( device, function(target){
-					return callback( target );
+				getTarget( device, function(err, target){
+					return callback( err, target );
 				});
 			},
 			set: function( device, target_temperature, callback ){
-				setTarget( device, target_temperature, function(result){
-					return callback(result);
+				setTarget( device, target_temperature, function(err, result){
+					return callback( err, result);
 				});
 			}
 		},
 		measure_temperature: {
 			get: function( device, callback ){
-				measureTemp( device, function(temp){
-					return callback( temp );
+				measureTemp( device, function(err, temp){
+					return callback( err, temp );
 				});
 			}
 		}
@@ -134,7 +134,8 @@ function setTarget(device, input, callback) {
 				module.exports.realtime({
 					id: device.id
 				}, 'target_temperature', temperature);
-				callback(temperature);
+				callback(null, temperature);
+
 			}
 		});
 	});	
@@ -145,6 +146,7 @@ function getTarget(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
+	console.log('Target url', url);
 	request({ url: url, timeout: 2000, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){ //Timout 2000 to make a quick time-out if not found
 		if (error) { //Could not find device, try to get the correct IP address
 			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
@@ -164,12 +166,15 @@ function getTarget(device, callback) {
 			module.exports.setAvailable( device, callback );
 
 		    var doc = XML.parse(body);
-			var temperature = doc.appliance.actuators.thermostat.setpoint;
+			var temperature = doc.appliance.actuator_functionalities.thermostat_functionality.setpoint;
+
+			console.log("temperature", temperature);
 			
 			module.exports.realtime({
 				id: device.id
-			}, 'target_temperature', temperature);
-			callback(temperature);
+			}, 'target_temperature', temperature)
+;
+			callback(null, temperature);
 		}
 	});
 };
@@ -179,14 +184,17 @@ function measureTemp(device, callback) {
 	var smile = devices.filter(function(x) { return x.id === device.id })[0];
 
 	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
+	console.log('Measure temp', url);
 	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
 		if (error) {	
 			return error;
 		} else {
 
 	    var doc = XML.parse(body);
-		var temp = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
-		callback(temp.period.measurement._Data);
+		var temp_data = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
+		var temp = temp_data.period.measurement._Data
+
+		callback(null, temp);
 		}
 	});
 }
