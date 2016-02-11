@@ -10,10 +10,6 @@
 		    <input type="text" name="password" id="password" placeholder="" />
 		</div>
 		<div class="form-group">
-		    <label for="ssid" data-i18n="pair.auth.stretch.ssid"></label>
-		    <input type="text" name="ssid" id="ssid" placeholder="" />
-		</div>
-		<div class="form-group">
 		    <input type="submit" value="Login" />
 		</div>
 	</form>
@@ -24,10 +20,9 @@
     Homey.setTitle( __('pair.auth.stretch.title') );
 	
 	function getForm(){
-		var ssid = document.forms["form"]["ssid"].value;
 		var password = document.forms["form"]["password"].value;
 
-		var stretch = {ssid: ssid, password: password}
+		var stretch = {password: password}
 		
 		Homey.emit('connect', { stretch }, function( err, result ){
 			if (err){

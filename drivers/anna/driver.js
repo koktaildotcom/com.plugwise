@@ -165,16 +165,21 @@ function getTarget(device, callback) {
 		} else {
 			module.exports.setAvailable( device, callback );
 
+			var temp;
 		    var doc = XML.parse(body);
-			var temperature = doc.appliance.actuator_functionalities.thermostat_functionality.setpoint;
+		    if (doc.appliance.actuator_functionalities.thermostat_functionality.setpoint) { //API 1.x
+		    	temp = doc.appliance.actuator_functionalities.thermostat_functionality.setpoint;
+		    } else if (doc.appliance.actuators.thermostat.setpoint) { //API 0.x
+		    	temp = doc.appliance.actuators.thermostat.setpoint;
+		    }
 
-			console.log("temperature", temperature);
+			console.log("temperature", temp);
 			
 			module.exports.realtime({
 				id: device.id
-			}, 'target_temperature', temperature)
+			}, 'target_temperature', temp)
 ;
-			callback(null, temperature);
+			callback(null, temp);
 		}
 	});
 };
@@ -192,7 +197,7 @@ function measureTemp(device, callback) {
 
 	    var doc = XML.parse(body);
 		var temp_data = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
-		var temp = temp_data.period.measurement._Data
+		var temp = temp_data.period.measurement._Data; //API 0.x and 1.x
 
 		callback(null, temp);
 		}

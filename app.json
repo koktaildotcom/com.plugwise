@@ -1,6 +1,6 @@
 {
 	"id": "com.plugwise",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"compatibility": "0.x || 1.x",
 	"category": "climate",
 	"name": {
@@ -76,7 +76,7 @@
 						"id": "list_devices",
 				        "template": "list_devices",
 				        "navigation": {
-				          "next": "add_device"
+				          "next": "add_devices"
 				        }
 					},
 					{

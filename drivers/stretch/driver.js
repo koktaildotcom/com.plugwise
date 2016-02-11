@@ -47,13 +47,13 @@ module.exports = {
 	capabilities: {
 		onoff: {
 			get: function( device, callback ){
-				requestState( device, function(result) {
-					return callback(result);
+				requestState( device, function( err, result ) {
+					return callback( err, result );
 				});
 			},
 			set: function( device, value, callback ){
-				toggleOnOff( device, value, function(result) {
-					return callback(result);
+				toggleOnOff( device, value, function( err, result ) {
+					return callback( err, result );
 				});
 			}
 		}
@@ -99,8 +99,7 @@ module.exports = {
 					id: stretch.data.id,
 					ip: stretch.data.ip,
 					name: stretch.data.name,
-					password: data.stretch.password,
-					ssid: data.stretch.ssid
+					password: data.stretch.password
 				}
 
 				plugwise.findDevices(combined_stretch, function(err, result) {
@@ -143,12 +142,13 @@ function toggleOnOff(device, value, callback) {
 	
 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id + '/relay';
+	console.log('ToggleOnOff', url);
 	request({ url: url, method: 'PUT', body : '<relay><state>' + toggle + '</state></relay>', headers: {'Content-Type': 'text/xml'}}, function(){
 		
 		module.exports.realtime({
 			id: device.id
 		}, 'onoff', value);
-		callback(value);
+		callback(null, value);
 	});
 };
 
@@ -158,6 +158,7 @@ function requestState(device, callback) {
 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
 	
 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id;
+	console.log('request State', url);
 	request({ url: url, timeout: 2000, method: 'GET' }, function(error, response, body){
 		if (error) { //Could not find device, try to get the correct IP address
 			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
@@ -177,12 +178,13 @@ function requestState(device, callback) {
 			module.exports.setAvailable( device, callback );
 
 		    var doc = XML.parse(body);
+		    var state = doc.appliance.actuators.relay.state;
 			
 			module.exports.realtime({
 				id: device.id
-			}, 'onoff', doc.appliance.actuators.relay.state);
+			}, 'onoff', state);
 			
-			callback(doc.appliance.actuators.relay.state);
+			callback(null, state);
 		}
 	});
 };
