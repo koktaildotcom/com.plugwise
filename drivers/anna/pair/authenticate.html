@@ -10,7 +10,7 @@
 		    <input type="text" name="password" id="password" placeholder="" />
 		</div>
 		<div class="form-group">
-		    <input type="submit" value="Login" />
+			<input type="submit" id="submit" value="Login" />
 		</div>
 	</form>
 
@@ -20,14 +20,18 @@
     Homey.setTitle( __('pair.auth.smile.title') );
 	
 	function getForm(){
+		document.getElementById('submit').disabled = 'disabled'; document.getElementById('submit').value = __('pair.auth.checking');
+
 		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
 
 		var smile = window.found_devices[ window.selected_devices[0] ].data;
 		
 		Homey.emit('connect', { smile }, function( err, result ){
 			if (err){
+				document.getElementById('submit').disabled = false; document.getElementById('submit').value = __('pair.auth.try_again');
 				alert(__('pair.auth.smile.wrong_id'));
-			} else {			
+			} else {
+				document.getElementById('submit').value = __('pair.auth.correct');		
 				Homey.addDevice({
 				    data: {
 				        id: smile.id,

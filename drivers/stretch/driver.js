@@ -5,11 +5,9 @@ var request = require('request');
 var Plugwise = require('plugwise');
 var plugwise = '';
 
-var current_stretch;
 var stretches = [];
 var appliances = [];
 var pairing = {};
-var list_appliance = false;
 
 var devices = [];
 
@@ -61,9 +59,12 @@ module.exports = {
 	
 	pair: function (socket) {
 		socket.on ( "start", function( data, callback ){
+			
 			plugwise.find('stretch', function(plugwise_devices){
+				console.log("This device is found", plugwise_devices)
+				appliances = [];
 				stretches = [];
-				list_appliance = false;
+				console.log(stretches.length);
 				
 				plugwise_devices.forEach(function(element) {
 					stretches.push({	
@@ -84,12 +85,12 @@ module.exports = {
 			});
 		}),
 		
-		socket.on ( "list_devices", function( data, callback ){
-			return callback(null, appliances);
-		}),
-		
 		socket.on ( "authenticate", function( data, callback ){
 			callback(null, true);
+		}),
+
+		socket.on ( "list_devices", function( data, callback ){
+			return callback(null, appliances); //not stretches
 		}),
 		
 		socket.on ( "connect", function( data, callback ){
@@ -161,9 +162,9 @@ function requestState(device, callback) {
 	console.log('request State', url);
 	request({ url: url, timeout: 2000, method: 'GET' }, function(error, response, body){
 		if (error) { //Could not find device, try to get the correct IP address
-			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
+			module.exports.setUnavailable( device, __('pair.auth.stretch.unavailable'), callback );
 
-			Homey.app.refreshIp('smile', function(result){
+			Homey.app.refreshIp('stretch', function(result){
 				if (result != false) { //If something found
 					devices.forEach(function(device) {
 						if (result.host == device.id && device.ip != result.address[0]) { //If matches the host and IP addresses are not the same

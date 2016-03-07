@@ -24,7 +24,10 @@
 				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters.",
 				"add_device": "Adding the device(s)",
 				"unavailable": "This Plugwise plug is unavailable"
-			}
+			},
+			"checking": "Checking...",
+			"try_again": "Try again",
+			"correct": "Correct"
 		}
 	}
 }

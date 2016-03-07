@@ -7,6 +7,7 @@ var Plugwise = require('plugwise');
 var plugwise = '';
 
 var smiles = [];
+var appliances = [];
 var pairing = {};
 
 var devices = [];
@@ -71,7 +72,9 @@ module.exports = {
 	
 	pair: function (socket) {
 		socket.on ( "start", function( data, callback ){
+
 			plugwise.find('smile', function(plugwise_devices){
+				appliances = [];
 				smiles = [];
 				
 				plugwise_devices.forEach(function(element) {

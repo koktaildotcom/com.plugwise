@@ -21,6 +21,7 @@ var self = module.exports = {
 
 	getDevices: function(device_type, callback) {		
 		browser.discover();
+		console.log("Start discovering devices");
 		return callback (
 			devices.filter(
 				function(x) { 
