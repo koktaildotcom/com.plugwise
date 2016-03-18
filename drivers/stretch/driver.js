@@ -135,9 +135,9 @@ function toggleOnOff(device, value, callback) {
 	
 	var toggle;
 	
-	if(value) {
+	if(value == true) {
 		toggle = 'on';
-	} else {
+	} else if (value == false) {
 		toggle = 'off';
 	}
 	
@@ -145,7 +145,7 @@ function toggleOnOff(device, value, callback) {
 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id + '/relay';
 	console.log('ToggleOnOff', url);
 	request({ url: url, method: 'PUT', body : '<relay><state>' + toggle + '</state></relay>', headers: {'Content-Type': 'text/xml'}}, function(){
-		
+
 		module.exports.realtime({
 			id: device.id
 		}, 'onoff', value);
@@ -180,7 +180,10 @@ function requestState(device, callback) {
 
 		    var doc = XML.parse(body);
 		    var state = doc.appliance.actuators.relay.state;
-			
+		    
+			if (state == "on") state = true;
+			if (state == "off") state = false;
+
 			module.exports.realtime({
 				id: device.id
 			}, 'onoff', state);
