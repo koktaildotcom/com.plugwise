@@ -76,10 +76,17 @@
 						"id": "list_devices",
 				        "template": "list_devices",
 				        "navigation": {
-				          "next": "add_devices"
+				          "next": "choose_slave"
 				        }
 					},
 					{
+	                    "id": "choose_slave",
+	                    "template": "choose_slave",
+	                    "navigation": {
+							"next": "add_devices"
+						}
+	                },
+	                {
 						"id": "add_devices",
 						"template": "add_devices"
 					}
