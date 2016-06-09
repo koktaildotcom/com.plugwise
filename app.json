@@ -1,96 +1,101 @@
 {
-	"id": "com.plugwise",
-	"version": "1.0.7",
-	"compatibility": "0.x || 1.x",
-	"category": "climate",
-	"name": {
-		"en": "Plugwise & Anna",
-		"nl": "Plugwise & Anna"
-	},
-	"description": {
-		"en": "Connect Homey with Plugwise & Anna",
-		"en": "Verbind Homey met Plugwise & Anna"
-	},
-	"author": {
-    	"name": "Athom B.V."
-  	},
-	"images": {
-    	"large": "./assets/images/large.jpg",
-    	"small": "./assets/images/small.jpg"
-	},
-	"dependencies": {
-	    "request": "*",
-	    "pixl-xml": "1.0.4",
-	    "plugwise": "0.1.0",
-	    "mdns-js": "0.4.0"
-  	},
-	"permissions": [],
-	"drivers": [
-		{
-			"id": "anna",
-			"name": {
-				"en": "Anna (Smile)"
-			},
-			"images": {
-		        "large": "./drivers/anna/assets/images/large.jpg",
-		        "small": "./drivers/anna/assets/images/small.jpg"
-		    },
-			"class": "thermostat",
-			"icon": "/assets/icon.svg",
-			"capabilities": [ "target_temperature", "measure_temperature" ],
-			"pair": [
-					{
-						"id": "start"
-					},
-					{
-						"id": "list_devices",
-				        "template": "list_devices_singular",
-				        "navigation": {
-				          "next": "authenticate"
-				        }
-					},
-					{
-						"id": "authenticate"
-					}
-			]
-		},
-		{
-			"id": "stretch",
-			"name": {
-				"en": "Plugwise (Stretch)"
-			},
-			"images": {
-		        "large": "./drivers/stretch/assets/images/large.jpg",
-		        "small": "./drivers/stretch/assets/images/small.jpg"
-		    },
-			"class": "socket",
-			"capabilities": [ "onoff" ],
-			"pair": [
-					{
-						"id": "start"
-					},
-					{
-						"id": "authenticate"
-					},
-					{
-						"id": "list_devices",
-				        "template": "list_devices",
-				        "navigation": {
-				          "next": "choose_slave"
-				        }
-					},
-					{
-	                    "id": "choose_slave",
-	                    "template": "choose_slave",
-	                    "navigation": {
-							"next": "add_devices"
-						}
-	                },
-	                {
-						"id": "add_devices",
-						"template": "add_devices"
-					}
-			]
-		}
-	]
+  "id": "com.plugwise",
+  "version": "2.0.0",
+  "compatibility": ">=0.8.30",
+  "category": [
+    "climate",
+    "tools"
+  ],
+  "name": {
+    "en": "Plugwise",
+    "nl": "Plugwise"
+  },
+  "description": {
+    "en": "Let Homey talk to your Plugwise devices",
+    "nl": "Verbind Homey met je Plugwise devices"
+  },
+  "author": {
+    "name": "Athom B.V."
+  },
+  "images": {
+    "large": "./assets/images/large.jpg",
+    "small": "./assets/images/small.jpg"
+  },
+  "dependencies": {
+    "request": "*",
+    "pixl-xml": "1.0.4",
+    "plugwise": "0.1.0",
+    "mdns-js": "0.4.0"
+  },
+  "permissions": [],
+  "drivers": [
+    {
+      "id": "anna",
+      "name": {
+        "en": "Anna"
+      },
+      "images": {
+        "large": "./drivers/anna/assets/images/large.jpg",
+        "small": "./drivers/anna/assets/images/small.jpg"
+      },
+      "class": "thermostat",
+      "icon": "/assets/icon.svg",
+      "capabilities": [
+        "target_temperature",
+        "measure_temperature"
+      ],
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices_singular",
+          "navigation": {
+            "next": "authenticate"
+          }
+        },
+        {
+          "id": "authenticate"
+        }
+      ]
+    },
+    {
+      "id": "stretch",
+      "name": {
+        "en": "Stretch"
+      },
+      "images": {
+        "large": "./drivers/stretch/assets/images/large.jpg",
+        "small": "./drivers/stretch/assets/images/small.jpg"
+      },
+      "class": "socket",
+      "capabilities": [
+        "onoff"
+      ],
+      "pair": [
+        {
+          "id": "start"
+        },
+        {
+          "id": "authenticate"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "choose_slave"
+          }
+        },
+        {
+          "id": "choose_slave",
+          "template": "choose_slave",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ]
+    }
+  ]
 }

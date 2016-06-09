@@ -1,233 +1,207 @@
-/* global Homey */
 "use strict";
 
-var XML = require('pixl-xml');
-var request = require('request');
-var Plugwise = require('plugwise');
-var plugwise = '';
-
-var smiles = [];
-var appliances = [];
-var pairing = {};
+var PlugwiseAPI = require('plugwise');
+var Anna = require('plugwise-anna');
 
 var devices = [];
 
-module.exports = {
-        
-	init: function( devices_homey, callback ){
-		Homey.log("Anna driver started");
+module.exports.init = function (devices_data, callback) {
 
-		devices = devices_homey;
+	// Loop over installed devices
+	for (let i in devices_data) {
+
+		// Set as default offline
+		module.exports.setUnavailable(devices_data[i], "Offline");
 		
-		plugwise = new Plugwise;
+		// Refresh client
+		devices_data[i].client = new Anna(devices_data[i].password, devices_data[i].ip, devices_data[i].id, devices_data[i].hostname);
 
-		var devices_smile = devices_homey.filter(function(x) { return x.id.indexOf('smile') > -1 });
+		// Store device
+		devices.push(devices_data[i]);
+		
+		// Start listening for device events
+		listenForEvents(devices_data[i]);
+	}
 
-		pollTemperature();
-				
-		if(devices_smile.length > 0) {
-			plugwise.getDevices(devices_smile, 'smile', function(result){
-				if(result === false)
-					return callback();
-				
-				devices = result;				
-				callback();
-			});
-		} else {
-			callback();
-		}
-	},
-	
-	deleted: function ( device_homey, callback ){
-		devices = devices.filter(function(x) { return x.id != device_homey.id });
-	},
-	
-	name: {
-		set: function( device, name, callback ) {
-			
-		}
-	},
-	
-	capabilities: {
-		target_temperature: {
-			get: function( device, callback ){
-				getTarget( device, function(err, target){
-					return callback( err, target );
+	callback();
+};
+
+module.exports.pair = function (socket) {
+
+	socket.on("list_devices", function (data, callback) {
+
+		// Perform local device discovery for smile devices
+		PlugwiseAPI.discoverDevices('smile').then(devices => {
+
+			// Create devices response object
+			var results = [];
+			for (let i in devices) {
+				results.push({
+					data: {
+						id: devices[i].host,
+						ip: devices[i].addresses[0],
+						hostname: devices[i].host,
+						name: 'smile'
+					},
+					name: devices[i].host
 				});
-			},
-			set: function( device, target_temperature, callback ){
-				setTarget( device, target_temperature, function(err, result){
-					return callback( err, result);
-				});
+			}
+
+			console.log(`Anna: list ${results.length} devices`);
+
+			// Return response
+			callback(null, results);
+		});
+	});
+
+	socket.on("connect", function (device, callback) {
+
+		console.log("Anna: fetch data from Plugwise API...");
+
+		// Fetch new data from plugwise api
+		PlugwiseAPI.fetchData(device).then(devices_data => {
+			for (let i in devices_data) {
+				if (devices_data[i].type === "thermostat") {
+
+					console.log("Anna: connect to device at " + device.ip);
+
+					var formatted_device = {
+						name: "Anna",
+						data: {
+							ip: device.ip,
+							id: devices_data[i].id,
+							hostname: device.hostname,
+							password: device.password,
+							onoff: devices_data[i].onoff,
+							target_temperature: devices_data[i].target_temperature,
+							measure_temperature: devices_data[i].measure_temperature,
+							name: 'smile',
+							client: new Anna(device.password, device.ip, devices_data[i].id, device.hostname)
+						}
+					};
+
+					// Start listening for device events
+					listenForEvents(formatted_device.data);
+
+					// Callback device
+					callback(null, formatted_device);
+
+					// Add device to internal list
+					return devices.push(formatted_device);
+				}
+			}
+		}).catch(err => {
+
+			console.log("Anna: connect error: " + err);
+
+			// Callback error
+			callback(err, false);
+		});
+	});
+};
+
+module.exports.capabilities = {
+
+	target_temperature: {
+		get: function (device_data, callback) {
+			if (!device_data) callback(true, null);
+
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client && device.client.target_temperature) {
+
+				// Callback formatted value
+				callback(null, device.client.target_temperature);
+			}
+			else {
+				callback(true, false);
 			}
 		},
-		measure_temperature: {
-			get: function( device, callback ){
-				measureTemp( device, function(err, temp){
-					return callback( err, temp );
+		set: function (device_data, target_temperature, callback) {
+			if (!device_data) callback(true, null);
+
+			var device = getDevice(device_data.id);
+			if (device && device.client && typeof device.client.setTarget == "function") {
+
+				// Set target temperature on device
+				device.client.setTarget(target_temperature, function (err, result) {
+
+					// Callback result
+					callback(err, result);
 				});
+			}
+			else {
+				callback(true, false);
 			}
 		}
 	},
-	
-	pair: function (socket) {
-		socket.on ( "start", function( data, callback ){
 
-			plugwise.find('smile', function(plugwise_devices){
-				appliances = [];
-				smiles = [];
-				
-				plugwise_devices.forEach(function(element) {
-					smiles.push({
-						data: {
-							id: 	element.host, //SSID
-							ip: 	element.addresses[0], //IP
-							name: 	'smile' //TYPE
-						},
-						name: 		element.host
-					});
-				}, this);
-				
-				if(smiles.length > 0){
-					callback(null, true);
-				} else {
-					callback(null, false);
-				}
-			});
-		}),
-	
-		socket.on ( "list_devices", function( data, callback ){
-			callback(null, smiles);
-		}),
-		
-		socket.on ( "authenticate", function( data, callback ){
-			callback(null, true);
-		}),
-		
-		socket.on ( "connect", function( data, callback ){
-			plugwise.findDevices(data.smile, function(err, result) {
-				if (err) {
-					callback (err, null);
-				} else {
-					var device = {
-						'id' : data.smile.id,
-						'anna' : result[0].id,
-						'password' : data.smile.password,
-						'ip' : data.smile.ip
-					}
+	measure_temperature: {
+		get: function (device_data, callback) {
+			if (!device_data) callback(true, null);
 
-					devices.push(device);
-					callback(null, result);
-				}
-			});
-		})
-	}
-}
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client && device.client.measure_temperature) {
 
-function setTarget(device, input, callback) {
-	validate(input, function(temperature){		
-		var smile = devices.filter(function(x) { return x.id === device.id })[0];
-		var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna + '/thermostat';
-		request({ url: url, method: 'PUT', body : '<thermostat><setpoint>' + temperature + '</setpoint></thermostat>', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
-			if (error) {
-				return error;
-				module.exports.setUnavailable( device, __('pair.stretch.unavailable'), callback );
-			} else {
-
-				module.exports.realtime({
-					id: device.id
-				}, 'target_temperature', temperature);
-				callback(null, temperature);
-
+				// Callback formatted value
+				callback(null, device.client.measure_temperature);
 			}
+			else {
+				callback(true, false);
+			}
+		}
+	}
+};
+
+function listenForEvents(device_data) {
+	if (device_data && device_data.client) {
+
+		device_data.client.on("available", function (device_data) {
+
+			console.log("Anna: mark device as available: " + device_data.ip);
+
+			// Mark as available
+			module.exports.setAvailable({data: {id: device_data.id}});
+
+		}).on("unavailable", function (device_data) {
+
+			console.log("Anna: mark device as unavailable: " + device_data.ip);
+
+			// Mark device as unavailable
+			module.exports.setUnavailable({data: {id: device_data.id}}, __('pair.auth.smile.unavailable'));
+
+		}).on("target_temperature", function (device_data, temperature) {
+
+			console.log("Anna: emit realtime target temperature update: " + temperature);
+
+			// Emit realtime
+			module.exports.realtime({data: {id: device_data.id}}, "target_temperature", temperature);
+
+		}).on("measure_temperature", function (device_data, temperature) {
+
+			console.log("Anna: emit realtime measure temperature update: " + temperature);
+
+			// Emit realtime
+			module.exports.realtime({data: {id: device_data.id}}, "measure_temperature", temperature);
 		});
-	});	
-};
+	}
+}
 
-function getTarget(device, callback) {
+module.exports.deleted = function (device) {
 
-	var smile = devices.filter(function(x) { return x.id === device.id })[0];
+	// Remove device
+	var internal_device = getDevice(device.id);
+	if (internal_device) internal_device.remove();
 
-	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
-	console.log('Target url', url);
-	request({ url: url, timeout: 2000, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){ //Timout 2000 to make a quick time-out if not found
-		if (error) { //Could not find device, try to get the correct IP address
-			module.exports.setUnavailable( device, __('pair.auth.smile.unavailable'), callback );
-
-			Homey.app.refreshIp('smile', function(result){
-				if (result != false) { //If something found
-					devices.forEach(function(device) {
-						if (result.host == device.id && device.ip != result.address[0]) { //If matches the host and IP addresses are not the same
-							device.ip = result.address[0]; //Set new IP
-							module.exports.setAvailable( device, callback ); //And make it available again
-						}
-					}, this);
-				}
-			});
-			return error;
-		} else {
-			module.exports.setAvailable( device, callback );
-
-			var temp;
-		    var doc = XML.parse(body);
-		    if (doc.appliance.actuator_functionalities.thermostat_functionality.setpoint) { //API 1.x
-		    	temp = doc.appliance.actuator_functionalities.thermostat_functionality.setpoint;
-		    } else if (doc.appliance.actuators.thermostat.setpoint) { //API 0.x
-		    	temp = doc.appliance.actuators.thermostat.setpoint;
-		    }
-
-			console.log("temperature", temp);
-			
-			module.exports.realtime({
-				id: device.id
-			}, 'target_temperature', temp)
-;
-			callback(null, temp);
-		}
+	// Remove device from internal list
+	devices = devices.filter(function (x) {
+		return x.id != device.id
 	});
 };
 
-function measureTemp(device, callback) {
-
-	var smile = devices.filter(function(x) { return x.id === device.id })[0];
-
-	var url = 'http://smile:' + smile.password + '@' + smile.ip + '/core/appliances;id=' + smile.anna;
-	console.log('Measure temp', url);
-	request({ url: url, method: 'GET', headers: {'Content-Type': 'text/xml'}}, function(error, response, body){
-		if (error) {	
-			return error;
-		} else {
-
-	    var doc = XML.parse(body);
-		var temp_data = doc.appliance.logs.point_log.filter(function(x) { return x.type === 'temperature' })[0];
-		var temp = temp_data.period.measurement._Data; //API 0.x and 1.x
-
-		callback(null, temp);
-		}
-	});
-}
-
-function validate(temperature, callback){
-
-	if(temperature > 30){
-		return callback(30);
-	}
-	else if(temperature < 4){
-		return callback(4);
-	} else {	
-		callback(Math.round(temperature * 2) / 2);
-	}	
-}
-
-function pollTemperature(){
-
-	try {
-		devices.forEach(function(element) {
-			getTarget(element, function(callback) {
-				
-			});
-		}, this);
-	}
-	catch(err) { }
-   	setTimeout(pollTemperature, 30000); //30 sec
+function getDevice(device_id) {
+	return devices.filter(function (x) {
+		return x.id === device_id
+	})[0];
 }

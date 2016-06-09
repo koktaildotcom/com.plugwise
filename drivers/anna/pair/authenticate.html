@@ -1,49 +1,54 @@
-<body>
+<p data-i18n="pair.auth.smile.find_id"></p>
+<img src="assets/icons/smile_id.svg" alt="Where to find your Smile ID">
+<br/>
 
-	<p data-i18n="pair.auth.smile.find_id"></p>
-	<img src="assets/icons/smile_id.svg" alt="Where to find your Smile ID">
-	<br/>
+<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
+    <div class="form-group">
+        <label for="password" data-i18n="pair.auth.smile.id"></label>
+        <input type="text" name="password" id="password" placeholder=""/>
+    </div>
+    <div class="form-group">
+        <input type="submit" id="submit" value="Login"/>
+    </div>
+</form>
 
-	<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
-		<div class="form-group">
-		    <label for="password" data-i18n="pair.auth.smile.id"></label>
-		    <input type="text" name="password" id="password" placeholder="" />
-		</div>
-		<div class="form-group">
-			<input type="submit" id="submit" value="Login" />
-		</div>
-	</form>
 
-</body>
-	
 <script type="text/javascript">
-    Homey.setTitle( __('pair.auth.smile.title') );
-	
-	function getForm(){
-		document.getElementById('submit').disabled = 'disabled'; document.getElementById('submit').value = __('pair.auth.checking');
+    Homey.setTitle(__('pair.auth.smile.title'));
 
-		window.found_devices[ window.selected_devices[0] ].data.password = document.forms["form"]["password"].value;
+    function getForm() {
 
-		var smile = window.found_devices[ window.selected_devices[0] ].data;
-		
-		Homey.emit('connect', { smile }, function( err, result ){
-			if (err){
-				document.getElementById('submit').disabled = false; document.getElementById('submit').value = __('pair.auth.try_again');
-				alert(__('pair.auth.smile.wrong_id'));
-			} else {
-				document.getElementById('submit').value = __('pair.auth.correct');		
-				Homey.addDevice({
-				    data: {
-				        id: smile.id,
-						anna: result[0].id,
-						password: smile.password,
-						ip: smile.ip 					
-				    },
-				    name: result[0].name
-				}, function( err, result ){
-				    Homey.done();
-				});
-			}
-		});
-	}
+        // Mark as authenticating
+        document.getElementById('submit').disabled = 'disabled';
+        document.getElementById('submit').value = __('pair.auth.checking');
+
+        // Store password of device
+        window.found_devices[window.selected_devices[0]].data.password = document.forms["form"]["password"].value;
+
+        // Create device object
+        var device = window.found_devices[window.selected_devices[0]].data;
+
+        Homey.emit('connect', device, function (err, result) {
+            if (err) {
+
+                // Pairing failed
+                document.getElementById('submit').disabled = false;
+                document.getElementById('submit').value = __('pair.auth.try_again');
+                alert(__('pair.auth.smile.wrong_id'));
+            }
+            else {
+
+                // Pairing succeeded
+                document.getElementById('submit').value = __('pair.auth.correct');
+
+                // Add device
+                Homey.addDevice(result, function (err, result) {
+                    if (err) console.error(err);
+                    else console.log(result);
+
+                    Homey.done();
+                });
+            }
+        });
+    }
 </script>
