@@ -190,10 +190,6 @@ function listenForEvents(device_data) {
 
 module.exports.deleted = function (device) {
 
-	// Remove device
-	var internal_device = getDevice(device.id);
-	if (internal_device) internal_device.remove();
-
 	// Remove device from internal list
 	devices = devices.filter(function (x) {
 		return x.id != device.id
