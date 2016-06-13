@@ -1,207 +1,321 @@
-// "use strict";
-//
-// var XML = require('pixl-xml');
-// var request = require('request');
-// var Plugwise = require('plugwise');
-// var plugwise = '';
-//
-// var stretches = [];
-// var appliances = [];
-// var pairing = {};
-//
-// var devices = [];
-//
-// module.exports = {
-//        
-// 	init: function( devices_homey, callback ){
-// 		Homey.log("Stretch driver started");
-//
-// 		devices = devices_homey;
-//
-// 		plugwise = new Plugwise;
-//
-// 		pollToggles();	
-//
-// 			plugwise.getDevices(devices_homey, 'stretch', function(result){
-// 				if(result === false)
-// 					return callback();
-//				
-// 				devices = result;				
-// 				callback();
-// 			});
-//			
-// 	},
-//		
-// 	deleted: function ( device_homey, callback ){
-// 		devices = devices.filter(function(x) { return x.id != device_homey.id });
-// 	},
-//	
-// 	name: {
-// 		set: function( device, name, callback ) {
-//			
-// 		}
-// 	},
-//	
-// 	capabilities: {
-// 		onoff: {
-// 			get: function( device, callback ){
-// 				requestState( device, function( err, result ) {
-// 					return callback( err, result );
-// 				});
-// 			},
-// 			set: function( device, value, callback ){
-// 				toggleOnOff( device, value, function( err, result ) {
-// 					return callback( err, result );
-// 				});
-// 			}
-// 		}
-// 	},
-//	
-// 	pair: function (socket) {
-// 		socket.on ( "start", function( data, callback ){
-//			
-// 			plugwise.find('stretch', function(plugwise_devices){
-// 				console.log("This device is found", plugwise_devices)
-// 				appliances = [];
-// 				stretches = [];
-// 				console.log(stretches.length);
-//				
-// 				plugwise_devices.forEach(function(element) {
-// 					stretches.push({	
-// 						data: {
-// 							id: 	element.host, //SSID
-// 							ip: 	element.addresses[0], //IP
-// 							name: 	'stretch' //TYPE
-// 						},
-// 						name: 		element.host
-// 					});
-// 				}, this);
-//				
-// 				if(stretches.length > 0){
-// 					callback(null, true);
-// 				} else {
-// 					callback(null, false);
-// 				}
-// 			});
-// 		}),
-//		
-// 		socket.on ( "authenticate", function( data, callback ){
-// 			callback(null, true);
-// 		}),
-//
-// 		socket.on ( "list_devices", function( data, callback ){
-// 			return callback(null, appliances); //not stretches
-// 		}),
-//		
-// 		socket.on ( "connect", function( data, callback ){
-// 			stretches.forEach(function(stretch) {
-//
-// 				var combined_stretch = {
-// 					id: stretch.data.id,
-// 					ip: stretch.data.ip,
-// 					name: stretch.data.name,
-// 					password: data.stretch.password
-// 				}
-//
-// 				plugwise.findDevices(combined_stretch, function(err, result) {
-// 					if (err) {
-// 						callback (err, null);
-// 					} else {
-// 						result.forEach(function(element) {
-// 							appliances.push({
-// 								data: {
-// 									id				: element.id, //STRETCH APPLIANCE ID
-// 									name			: element.name,
-// 									ip  			: stretch.data.ip,
-// 									password        : data.stretch.password, 
-// 								},
-// 								name				: element.name
-// 							});
-// 						}, this);
-// 						callback(null, result);
-// 					}
-// 				});
-// 			});
-// 		}),
-//		
-// 		socket.on ( "add_device", function( data, callback ){
-// 			devices.push(data.data);
-// 			callback(null, true);
-// 		})
-// 	}	
-// }
-//
-// function toggleOnOff(device, value, callback) {
-//	
-// 	var toggle;
-//	
-// 	if(value == true) {
-// 		toggle = 'on';
-// 	} else if (value == false) {
-// 		toggle = 'off';
-// 	}
-//	
-// 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
-// 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id + '/relay';
-// 	console.log('ToggleOnOff', url);
-// 	request({ url: url, method: 'PUT', body : '<relay><state>' + toggle + '</state></relay>', headers: {'Content-Type': 'text/xml'}}, function(){
-//
-// 		module.exports.realtime({
-// 			id: device.id
-// 		}, 'onoff', value);
-// 		callback(null, value);
-// 	});
-// };
-//
-//
-// function requestState(device, callback) {
-//
-// 	var relay = devices.filter(function(x) { return x.id === device.id })[0];
-//	
-// 	var url = 'http://stretch:' + relay.password + '@' + relay.ip + '/core/appliances/' + relay.id;
-// 	console.log('request State', url);
-// 	request({ url: url, timeout: 2000, method: 'GET' }, function(error, response, body){
-// 		if (error) { //Could not find device, try to get the correct IP address
-// 			module.exports.setUnavailable( device, __('pair.auth.stretch.unavailable'), callback );
-//
-// 			Homey.app.refreshIp('stretch', function(result){
-// 				if (result != false) { //If something found
-// 					devices.forEach(function(device) {
-// 						if (result.host == device.id && device.ip != result.address[0]) { //If matches the host and IP addresses are not the same
-// 							device.ip = result.address[0]; //Set new IP
-// 							module.exports.setAvailable( device, callback ); //And make it available again
-// 						}
-// 					}, this);
-// 				}
-// 			});
-// 			return error;
-// 		} else {
-// 			module.exports.setAvailable( device, callback );
-//
-// 		    var doc = XML.parse(body);
-// 		    var state = doc.appliance.actuators.relay.state;
-//		    
-// 			if (state == "on") state = true;
-// 			if (state == "off") state = false;
-//
-// 			module.exports.realtime({
-// 				id: device.id
-// 			}, 'onoff', state);
-//			
-// 			callback(null, state);
-// 		}
-// 	});
-// };
-//
-// function pollToggles(){
-//
-// 	try {
-// 		devices.forEach(function(element) {
-// 			requestState(element, function(callback) {
-//				
-// 			});
-// 		}, this);
-// 	}
-// 	catch(err) { }
-//    	setTimeout(pollToggles, 30000); //30 sec
-// }
+"use strict";
+
+const PlugwiseAPI = require('plugwise');
+const Stretch = require('plugwise-stretch');
+
+var devices = [];
+
+module.exports.init = function (devices_data, callback) {
+
+	// Loop over installed devices
+	for (let i in devices_data) {
+
+		// Set as default offline
+		module.exports.setUnavailable(devices_data[i], "Offline");
+	}
+
+	function reconnectDevices(devices_data) {
+
+		// Create promises array
+		let promises = [];
+
+		// Loop over stretches
+		for (let i in devices_data) {
+
+			// Push fetch data promise to array
+			promises.push(
+				PlugwiseAPI.fetchData({
+					id: devices_data[i].stretch_id,
+					name: devices_data[i].name,
+					ip: devices_data[i].ip,
+					password: devices_data[i].password
+				})
+			);
+		}
+
+		// Wait for all promises to resolve
+		Promise.all(promises).then(values => {
+
+			// Loop over all values
+			for (let i in values) {
+				let api_devices_data = values[i];
+
+				// Loop over devices in value
+				for (let j in api_devices_data) {
+
+					// Check for plug type
+					if (api_devices_data[j].type === "plug") {
+
+						// Loop over installed devices
+						for (let k in devices_data) {
+
+							// Check for matching device
+							if (devices_data[k].id === api_devices_data[j].id) {
+
+								console.log("Stretch: found plug " + api_devices_data[j].name + " mark as available");
+
+								// Mark as available
+								module.exports.setAvailable(devices_data[k]);
+
+								// Create new client
+								devices_data[k].client = new Stretch(devices_data[k].password, devices_data[k].ip, devices_data[k].id, devices_data[k].hostname);
+
+								// Save device internally
+								devices.push(devices_data[k]);
+
+								// Start listening for events
+								listenForEvents(devices_data[k]);
+							}
+						}
+					}
+				}
+			}
+
+			// We are done
+			callback()
+
+		}).catch(err => {
+
+			console.log("Stretch: driver init error: " + err);
+
+			// Reconnect with installed devices
+			setTimeout(() => {
+				reconnectDevices(devices_data);
+			}, 5000);
+
+			callback();
+		});
+	}
+
+	// Reconnect with installed devices
+	reconnectDevices(devices_data);
+};
+
+module.exports.pair = function (socket) {
+
+	let stretches;
+	let plugs;
+
+	socket.on("start", function (data, callback) {
+
+		// Empty stretches array
+		stretches = [];
+
+		// Perform local device discovery for stretch devices
+		PlugwiseAPI.discoverDevices('stretch').then(devices => {
+
+			// Create devices response object
+			for (let i in devices) {
+				stretches.push({
+					data: {
+						id: devices[i].host,
+						ip: devices[i].addresses[0],
+						hostname: devices[i].host,
+						name: 'stretch'
+					},
+					name: devices[i].host
+				});
+			}
+
+			console.log(`Stretch: discover ${stretches.length} devices`);
+
+			// Return response
+			callback(null, (stretches.length > 0));
+		});
+	});
+
+	socket.on("authenticate", function (data, callback) {
+		callback(null, true);
+	});
+
+	socket.on("connect", function (password, callback) {
+
+		console.log("Stretch: fetch data from Plugwise API...");
+
+		// Clear plugs array
+		plugs = [];
+
+		// Create promises array
+		let promises = [];
+
+		// Loop over stretches
+		for (let i in stretches) {
+			console.log(stretches[i])
+			// Push fetch data promise to array
+			promises.push(
+				PlugwiseAPI.fetchData({
+					id: stretches[i].data.id,
+					name: stretches[i].data.name,
+					ip: stretches[i].data.ip,
+					password: password
+				})
+			);
+		}
+
+		// Wait for all promises to resolve
+		Promise.all(promises).then(values => {
+
+			// Loop over all values
+			for (let i in values) {
+				let devices_data = values[i];
+
+				// Loop over devices in value
+				for (let j in devices_data) {
+
+					// Check for plug type
+					if (devices_data[j].type === "plug") {
+
+						console.log("Stretch: found plug " + devices_data[j].name);
+
+						// Found plug, push to array
+						plugs.push({
+							name: devices_data[j].name,
+							data: {
+								type: 'plug',
+								ip: stretches[i].data.ip,
+								stretch_id: stretches[i].data.id,
+								name: stretches[i].data.name,
+								plug_name: devices_data[j].name,
+								id: devices_data[j].id,
+								password: password,
+								hostname: stretches[i].data.hostname
+							}
+						});
+					}
+				}
+			}
+
+			console.log(`Stretch: found ${plugs.length} plugs`);
+
+			// Return found plugs
+			callback(null, plugs);
+
+		}).catch(err => {
+
+			console.log("Stretch: connect error: " + err);
+
+			// Callback error
+			callback(err, false);
+		});
+	});
+
+	socket.on("list_devices", function (data, callback) {
+
+		console.log(`Stretch: list ${plugs.length} plugs`);
+
+		// Return response
+		callback(null, plugs);
+
+		// Empty stretches array
+		stretches = [];
+		plugs = [];
+	});
+
+	socket.on("add_device", function (device, callback) {
+
+		if (device && device.data) {
+
+			// Refresh client
+			device.data.client = new Stretch(device.data.password, device.data.ip, device.data.id, device.data.hostname);
+
+			// Store device internally
+			devices.push(device.data);
+
+			console.log(`Stretch: added plug: ${device.name} on ` + device.data.ip);
+
+			// Start listening for incoming events
+			listenForEvents(device.data);
+
+			// Return success
+			callback(null, true);
+		}
+		else {
+			callback(true, false);
+		}
+	});
+};
+
+module.exports.capabilities = {
+
+	onoff: {
+		get: function (device_data, callback) {
+			if (!device_data) callback(true, null);
+
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client) {
+
+				// Callback formatted value
+				callback(null, device.client.onoff);
+			}
+			else {
+				callback(true, false);
+			}
+		},
+		set: function (device_data, onoff, callback) {
+			if (!device_data) callback(true, null);
+
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client && typeof device.client.setState === "function") {
+
+				// Set state on device
+				device.client.setState(onoff, function (err, result) {
+
+					// Callback formatted value
+					callback(err, result);
+				});
+			}
+			else {
+				callback(true, false);
+			}
+		}
+	}
+};
+
+function listenForEvents(device_data) {
+	if (device_data && device_data.client) {
+
+		console.log("Stretch: start listening for events on " + device_data.plug_name);
+
+		device_data.client.on("available", function () {
+
+			console.log("Stretch: mark device as available: " + device_data.plug_name + " " + device_data.ip);
+
+			// Mark as available
+			delete device_data["client"];
+			module.exports.setAvailable(device_data);
+
+		}).on("unavailable", function () {
+
+			console.log("Stretch: mark device as unavailable: " + device_data.plug_name + " " + device_data.ip);
+
+			// Mark device as unavailable
+			delete device_data["client"];
+			module.exports.setUnavailable(device_data, __('pair.auth.stretch.unavailable'));
+
+		}).on("onoff", function (onoff) {
+
+			console.log("Stretch: emit realtime onoff update: " + device_data.plug_name + " " + onoff);
+
+			// Emit realtime
+			delete device_data["client"];
+			module.exports.realtime(device_data, "onoff", onoff);
+
+		});
+	}
+}
+
+module.exports.deleted = function (device) {
+
+	// Remove device from internal list
+	devices = devices.filter(function (x) {
+		return x.id != device.id
+	});
+};
+
+function getDevice(device_id) {
+	return devices.filter(function (x) {
+		return x.id === device_id
+	})[0];
+}

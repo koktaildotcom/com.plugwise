@@ -1,39 +1,40 @@
 <body>
 
-	<p data-i18n="pair.auth.stretch.find_id"></p>
-	<img src="assets/icons/stretch_id.svg" alt="Where to find your Stertch ID">
-	<br/>
+<p data-i18n="pair.auth.stretch.find_id"></p>
+<img src="assets/icons/stretch_id.svg" alt="Where to find your Stretch ID">
+<br/>
 
-	<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
-		<div class="form-group">
-		    <label for="password" data-i18n="pair.auth.stretch.id"></label>
-		    <input type="text" name="password" id="password" placeholder="" />
-		</div>
-		<div class="form-group">
-			<input type="submit" id="submit" value="Login" />
-		</div>
-	</form>
+<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
+    <div class="form-group">
+        <label for="password" data-i18n="pair.auth.stretch.id"></label>
+        <input type="text" name="password" id="password" placeholder=""/>
+    </div>
+    <div class="form-group">
+        <input type="submit" id="submit" value="Login"/>
+    </div>
+</form>
 
 </body>
-	
+
 <script type="text/javascript">
-    Homey.setTitle( __('pair.auth.stretch.title') );
-	
-	function getForm(){
-		document.getElementById('submit').disabled = 'disabled'; document.getElementById('submit').value = __('pair.auth.checking');
+    Homey.setTitle(__('pair.auth.stretch.title'));
 
-		var password = document.forms["form"]["password"].value;
+    function getForm() {
+        document.getElementById('submit').disabled = 'disabled';
+        document.getElementById('submit').value = __('pair.auth.checking');
 
-		var stretch = {password: password}
-		
-		Homey.emit('connect', { stretch }, function( err, result ){
-			if (err){
-				document.getElementById('submit').disabled = false; document.getElementById('submit').value = __('pair.auth.try_again');
-				alert(__('pair.auth.stretch.wrong_id'));
-			} else {
-				document.getElementById('submit').value = __('pair.auth.correct');
-				Homey.showView('list_devices');
-			}
-		});
-	}
+        var password = document.forms["form"]["password"].value;
+
+        Homey.emit('connect', password, function (err, result) {
+            if (!err && result) {
+                document.getElementById('submit').value = __('pair.auth.correct');
+                Homey.showView('list_devices');
+            }
+            else {
+                document.getElementById('submit').disabled = false;
+                document.getElementById('submit').value = __('pair.auth.try_again');
+                alert(__('pair.auth.stretch.wrong_id'));
+            }
+        });
+    }
 </script>

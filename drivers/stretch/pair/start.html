@@ -1,12 +1,12 @@
 <script type="text/javascript">
-    Homey.setTitle( __('pair.start.stretch.title') );
-	
-    Homey.emit('start', {}, function( err, result ){
-    	if (result == true) {
-    		console.log("authenticate")
-			Homey.showView('authenticate');
-		} else if (result == false) {
-			Homey.showView('list_devices');
-		}
-	});
+    Homey.setTitle(__('pair.start.stretch.title'));
+
+    Homey.emit('start', {}, function (err, result) {
+        if (result == true) {
+            Homey.showView('authenticate');
+        }
+        else if (result == false) {
+            Homey.showView('list_devices');
+        }
+    });
 </script>
