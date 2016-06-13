@@ -12,13 +12,13 @@ module.exports.init = function (devices_data, callback) {
 
 		// Set as default offline
 		module.exports.setUnavailable(devices_data[i], "Offline");
-		
+
 		// Refresh client
 		devices_data[i].client = new Anna(devices_data[i].password, devices_data[i].ip, devices_data[i].id, devices_data[i].hostname);
 
 		// Store device
-		devices.push(devices_data[i]);
-		
+		devices.push({data: devices_data[i]});
+
 		// Start listening for device events
 		listenForEvents(devices_data[i]);
 	}
@@ -71,12 +71,7 @@ module.exports.pair = function (socket) {
 							ip: device.ip,
 							id: devices_data[i].id,
 							hostname: device.hostname,
-							password: device.password,
-							onoff: devices_data[i].onoff,
-							target_temperature: devices_data[i].target_temperature,
-							measure_temperature: devices_data[i].measure_temperature,
-							name: 'smile',
-							client: new Anna(device.password, device.ip, devices_data[i].id, device.hostname)
+							password: device.password
 						}
 					};
 
@@ -84,10 +79,23 @@ module.exports.pair = function (socket) {
 					listenForEvents(formatted_device.data);
 
 					// Callback device
-					callback(null, formatted_device);
+					callback(null, formatted_device)
 
 					// Add device to internal list
-					return devices.push(formatted_device);
+					devices.push({
+						name: "Anna",
+						data: {
+							ip: device.ip,
+							id: devices_data[i].id,
+							hostname: device.hostname,
+							password: device.password,
+							onoff: devices_data[i].onoff,
+							target_temperature: devices_data[i].target_temperature,
+							measure_temperature: devices_data[i].measure_temperature,
+							name: 'smile',
+							client: new Anna(device.password, device.ip, devices_data[i].id, device.hostname)
+						}
+					});
 				}
 			}
 		}).catch(err => {
@@ -157,33 +165,40 @@ module.exports.capabilities = {
 function listenForEvents(device_data) {
 	if (device_data && device_data.client) {
 
+		var device_data_obj = {
+			ip: device_data.ip,
+			id: device_data.id,
+			hostname: device_data.hostname,
+			password: device_data.password
+		};
+
 		device_data.client.on("available", function (device_data) {
 
 			console.log("Anna: mark device as available: " + device_data.ip);
 
 			// Mark as available
-			module.exports.setAvailable({data: {id: device_data.id}});
+			module.exports.setAvailable(device_data_obj);
 
 		}).on("unavailable", function (device_data) {
 
 			console.log("Anna: mark device as unavailable: " + device_data.ip);
 
 			// Mark device as unavailable
-			module.exports.setUnavailable({data: {id: device_data.id}}, __('pair.auth.smile.unavailable'));
+			module.exports.setUnavailable(device_data_obj, __('pair.auth.smile.unavailable'));
 
 		}).on("target_temperature", function (device_data, temperature) {
 
 			console.log("Anna: emit realtime target temperature update: " + temperature);
 
 			// Emit realtime
-			module.exports.realtime({data: {id: device_data.id}}, "target_temperature", temperature);
+			module.exports.realtime(device_data_obj, "target_temperature", temperature);
 
 		}).on("measure_temperature", function (device_data, temperature) {
 
 			console.log("Anna: emit realtime measure temperature update: " + temperature);
 
 			// Emit realtime
-			module.exports.realtime({data: {id: device_data.id}}, "measure_temperature", temperature);
+			module.exports.realtime(device_data_obj, "measure_temperature", temperature);
 		});
 	}
 }
@@ -197,7 +212,14 @@ module.exports.deleted = function (device) {
 };
 
 function getDevice(device_id) {
-	return devices.filter(function (x) {
-		return x.id === device_id
-	})[0];
+	var found = devices.filter(function (x) {
+		return x.data.id === device_id
+	});
+
+	if (found.length >= 0 && found[0].data) {
+		return found[0].data;
+	}
+	else {
+		return new Error("invalid_device");
+	}
 }

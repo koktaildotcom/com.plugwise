@@ -93,8 +93,8 @@ module.exports.init = function (devices_data, callback) {
 
 module.exports.pair = function (socket) {
 
-	let stretches;
-	let plugs;
+	let stretches = [];
+	let plugs = [];
 
 	socket.on("start", function (data, callback) {
 
@@ -140,7 +140,7 @@ module.exports.pair = function (socket) {
 
 		// Loop over stretches
 		for (let i in stretches) {
-			console.log(stretches[i])
+
 			// Push fetch data promise to array
 			promises.push(
 				PlugwiseAPI.fetchData({
@@ -276,6 +276,12 @@ module.exports.capabilities = {
 function listenForEvents(device_data) {
 	if (device_data && device_data.client) {
 
+		var device_data_obj = {};
+
+		for (var x in device_data) {
+			if (x !== "client") device_data_obj[x] = device_data[x];
+		}
+
 		console.log("Stretch: start listening for events on " + device_data.plug_name);
 
 		device_data.client.on("available", function () {
@@ -283,24 +289,21 @@ function listenForEvents(device_data) {
 			console.log("Stretch: mark device as available: " + device_data.plug_name + " " + device_data.ip);
 
 			// Mark as available
-			delete device_data["client"];
-			module.exports.setAvailable(device_data);
+			module.exports.setAvailable(device_data_obj);
 
 		}).on("unavailable", function () {
 
 			console.log("Stretch: mark device as unavailable: " + device_data.plug_name + " " + device_data.ip);
 
 			// Mark device as unavailable
-			delete device_data["client"];
-			module.exports.setUnavailable(device_data, __('pair.auth.stretch.unavailable'));
+			module.exports.setUnavailable(device_data_obj, __('pair.auth.stretch.unavailable'));
 
 		}).on("onoff", function (onoff) {
 
 			console.log("Stretch: emit realtime onoff update: " + device_data.plug_name + " " + onoff);
 
 			// Emit realtime
-			delete device_data["client"];
-			module.exports.realtime(device_data, "onoff", onoff);
+			module.exports.realtime(device_data_obj, "onoff", onoff);
 
 		});
 	}
