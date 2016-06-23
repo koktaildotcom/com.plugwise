@@ -79,7 +79,7 @@ module.exports.pair = function (socket) {
 					listenForEvents(formatted_device.data);
 
 					// Callback device
-					callback(null, formatted_device)
+					callback(null, formatted_device);
 
 					// Add device to internal list
 					devices.push({
@@ -203,11 +203,17 @@ function listenForEvents(device_data) {
 	}
 }
 
-module.exports.deleted = function (device) {
+module.exports.added = function (device_data) {
+
+	// Start listening for events
+	listenForEvents(getDevice(device_data.id));
+};
+
+module.exports.deleted = function (device_data) {
 
 	// Remove device from internal list
 	devices = devices.filter(function (x) {
-		return x.id != device.id
+		return x.id != device_data.id
 	});
 };
 

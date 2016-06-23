@@ -18,19 +18,25 @@ module.exports.init = function (devices_data, callback) {
 
 		// Create promises array
 		let promises = [];
+		let stretches = []
 
 		// Loop over stretches
 		for (let i in devices_data) {
 
 			// Push fetch data promise to array
-			promises.push(
-				PlugwiseAPI.fetchData({
-					id: devices_data[i].stretch_id,
-					name: devices_data[i].name,
-					ip: devices_data[i].ip,
-					password: devices_data[i].password
-				})
-			);
+			if (stretches.indexOf(devices_data[i].stretch_id) == -1) {
+				promises.push(
+					PlugwiseAPI.fetchData({
+						id: devices_data[i].stretch_id,
+						name: devices_data[i].name,
+						ip: devices_data[i].ip,
+						password: devices_data[i].password
+					})
+				);
+
+				// Push stretch id
+				stretches.push(devices_data[i].stretch_id);
+			}
 		}
 
 		// Wait for all promises to resolve
