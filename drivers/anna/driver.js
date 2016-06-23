@@ -165,6 +165,11 @@ module.exports.capabilities = {
 function listenForEvents(device_data) {
 	if (device_data && device_data.client) {
 
+		var debouncers = {
+			"target_temperature": null,
+			"measure_temperature": null
+		};
+
 		var device_data_obj = {
 			ip: device_data.ip,
 			id: device_data.id,
@@ -188,17 +193,37 @@ function listenForEvents(device_data) {
 
 		}).on("target_temperature", function (device_data, temperature) {
 
-			console.log("Anna: emit realtime target temperature update: " + temperature);
+			// If debouncer present, reset it
+			if (debouncers["target_temperature"]) {
+				debouncers["target_temperature"] = clearTimeout(debouncers["target_temperature"]);
+			}
 
-			// Emit realtime
-			module.exports.realtime(device_data_obj, "target_temperature", temperature);
+			// Set debouncer
+			debouncers["target_temperature"] = setTimeout(()=> {
+
+				console.log("Anna: emit realtime target temperature update: " + temperature);
+
+				// Emit realtime
+				module.exports.realtime(device_data_obj, "target_temperature", temperature);
+
+			}, 500);
 
 		}).on("measure_temperature", function (device_data, temperature) {
 
-			console.log("Anna: emit realtime measure temperature update: " + temperature);
+			// If debouncer present, reset it
+			if (debouncers["measure_temperature"]) {
+				debouncers["measure_temperature"] = clearTimeout(debouncers["measure_temperature"]);
+			}
 
-			// Emit realtime
-			module.exports.realtime(device_data_obj, "measure_temperature", temperature);
+			// Set debouncer
+			debouncers["measure_temperature"] = setTimeout(()=> {
+
+				console.log("Anna: emit realtime measure temperature update: " + temperature);
+
+				// Emit realtime
+				module.exports.realtime(device_data_obj, "measure_temperature", temperature);
+
+			}, 500);
 		});
 	}
 }
