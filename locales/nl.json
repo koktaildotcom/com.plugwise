@@ -1,5 +1,6 @@
 {
 	"pair": {
+		"no_device_selected": "Het lijkt erop dat er geen apparaat geselecteerd is in het vorige scherm, herstart de pairing wizard en probeer het opnieuw.",
 		"start": {
 			"smile": {
 				"title": "Aan het zoeken naar Smile bridges..."
@@ -12,14 +13,14 @@
 			"smile": {
 				"title": "Vul het Smile ID in",
 				"find_id": "Er zit een sticker op je Smile, het Smile ID kan je vinden op deze sticker zoals weergeven in de onderstaande illustratie.",
-				"id": "Smile ID:",
+				"id": "Smile ID",
 				"wrong_id": "Je hebt een verkeerd Smile ID ingevuld, probeer het opnieuw. Het Smile ID is een woord bestaande uit 8 kleine letters.",
 				"unavailable": "Deze Anna thermostaat is niet beschikbaar"
 			},
 			"stretch": {
 				"title": "Vul het Stretch ID in",
 				"find_id": "Er zit een sticker op je Stretch, het Stretch ID kan je vinden op deze sticker zoals weergeven in de onderstaande illustratie.",
-				"id": "Stretch ID:",
+				"id": "Stretch ID",
 				"ssid": "ssid",
 				"wrong_id": "Je hebt een verkeerd Stretch ID ingevuld, probeer het opnieuw. Het Stretch ID is een woord bestaande uit 8 kleine letters",
 				"add_device": "Apparaten aan het toevoegen",

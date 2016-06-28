@@ -1,5 +1,6 @@
 {
 	"pair": {
+		"no_device_selected": "It appears you did not select a device in the previous window, restart the pairing wizard and try again.",
 		"start": {
 			"smile": {
 				"title": "Looking for your Smile bridges..."
@@ -12,14 +13,14 @@
 			"smile": {
 				"title": "Please enter the Smile ID",
 				"find_id": "There is a label on your Smile-device, the Smile ID can be found on this label as shown in the illustration.",
-				"id": "Smile ID:",
+				"id": "Smile ID",
 				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters.",
 				"unavailable": "This Anna thermostat is unavailable"
 			},
 			"stretch": {
 				"title": "Please enter the Stretch ID",
 				"find_id": "There is a label on your Stretch-device, the Stretch ID can be found on this label as shown in the illustration.",
-				"id": "Stretch ID:",
+				"id": "Stretch ID",
 				"ssid": "ssid",
 				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters.",
 				"add_device": "Adding the device(s)",

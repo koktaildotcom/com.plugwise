@@ -17,7 +17,7 @@ module.exports.init = function (devices_data, callback) {
 		devices_data[i].client = new Anna(devices_data[i].password, devices_data[i].ip, devices_data[i].id, devices_data[i].hostname);
 
 		// Store device
-		devices.push({data: devices_data[i]});
+		devices.push({ data: devices_data[i] });
 
 		// Start listening for device events
 		listenForEvents(devices_data[i]);
@@ -31,20 +31,25 @@ module.exports.pair = function (socket) {
 	socket.on("list_devices", function (data, callback) {
 
 		// Perform local device discovery for smile devices
-		PlugwiseAPI.discoverDevices('smile').then(devices => {
+		PlugwiseAPI.discoverDevices('smile').then(data => {
 
 			// Create devices response object
 			var results = [];
-			for (let i in devices) {
-				results.push({
-					data: {
-						id: devices[i].host,
-						ip: devices[i].addresses[0],
-						hostname: devices[i].host,
-						name: 'smile'
-					},
-					name: devices[i].host
-				});
+			for (let i in data) {
+
+				// Check if device is already added
+				if (!devices.find((device) => device.data.hostname === data[i].host)) {
+					
+					results.push({
+						data: {
+							id: data[i].host,
+							ip: data[i].addresses[0],
+							hostname: data[i].host,
+							name: 'smile'
+						},
+						name: data[i].host
+					});
+				}
 			}
 
 			console.log(`Anna: list ${results.length} devices`);
@@ -237,9 +242,11 @@ module.exports.added = function (device_data) {
 module.exports.deleted = function (device_data) {
 
 	// Remove device from internal list
-	devices = devices.filter(function (x) {
-		return x.id != device_data.id
-	});
+	for(var i in devices) {
+		if(devices[i].data.id === device_data.id){
+			devices.splice(i, 1);
+		}
+	}
 };
 
 function getDevice(device_id) {
