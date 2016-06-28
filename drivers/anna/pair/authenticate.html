@@ -29,7 +29,7 @@
 
 	if (!window.found_devices[window.selected_devices[0]]) {
 		document.getElementById("submit").setAttribute("disabled", "disabled");
-		alert(__("pair.no_device_selected"));
+		Homey.alert(__("pair.no_device_selected"));
 		Homey.showView("list_devices");
 	}
 
@@ -51,7 +51,7 @@
 				// Pairing failed
 				document.getElementById('submit').disabled = false;
 				document.getElementById('submit').value = __('pair.auth.try_again');
-				alert(__('pair.auth.smile.wrong_id'));
+				Homey.alert(__('pair.auth.smile.wrong_id'));
 			}
 			else {
 
