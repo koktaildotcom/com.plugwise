@@ -1,6 +1,6 @@
 {
 	"pair": {
-		"no_device_selected": "It appears you did not select a device in the previous window, restart the pairing wizard and try again.",
+		"no_device_selected": "It appears you did not select a device in the previous window, please try again.",
 		"start": {
 			"smile": {
 				"title": "Looking for your Smile bridges..."

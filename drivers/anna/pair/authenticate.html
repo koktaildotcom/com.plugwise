@@ -30,7 +30,7 @@
 	if (!window.found_devices[window.selected_devices[0]]) {
 		document.getElementById("submit").setAttribute("disabled", "disabled");
 		alert(__("pair.no_device_selected"));
-		Homey.done();
+		Homey.showView("list_devices");
 	}
 
 	function getForm() {

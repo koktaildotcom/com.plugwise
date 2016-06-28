@@ -1,6 +1,6 @@
 {
 	"pair": {
-		"no_device_selected": "Het lijkt erop dat er geen apparaat geselecteerd is in het vorige scherm, herstart de pairing wizard en probeer het opnieuw.",
+		"no_device_selected": "Het lijkt erop dat er geen apparaat geselecteerd is in het vorige scherm, probeer het opnieuw.",
 		"start": {
 			"smile": {
 				"title": "Aan het zoeken naar Smile bridges..."
