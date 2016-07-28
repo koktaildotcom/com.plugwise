@@ -39,7 +39,7 @@ module.exports.pair = function (socket) {
 
 				// Check if device is already added
 				if (!devices.find((device) => device.data.hostname === data[i].host)) {
-					
+
 					results.push({
 						data: {
 							id: data[i].host,
@@ -241,9 +241,18 @@ module.exports.added = function (device_data) {
 
 module.exports.deleted = function (device_data) {
 
+	// Get device
+	var device = getDevice(device_data.id);
+	if (device && device.client) {
+
+		// Stop polling
+		device.client.remove();
+
+	}
+
 	// Remove device from internal list
-	for(var i in devices) {
-		if(devices[i].data.id === device_data.id){
+	for (var i in devices) {
+		if (devices[i].data.id === device_data.id) {
 			devices.splice(i, 1);
 		}
 	}

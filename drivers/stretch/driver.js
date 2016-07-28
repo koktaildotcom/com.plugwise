@@ -317,6 +317,12 @@ function listenForEvents(device_data) {
 
 module.exports.deleted = function (device) {
 
+	// Get device
+	var storedDevice = getDevice(device.id);
+	if (storedDevice && storedDevice.client) {
+		storedDevice.client.remove();
+	}
+
 	// Remove device from internal list
 	devices = devices.filter(function (x) {
 		return x.id != device.id
