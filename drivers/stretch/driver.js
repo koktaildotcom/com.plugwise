@@ -78,7 +78,7 @@ module.exports.init = function (devices_data, callback) {
 			}
 
 			// We are done
-			callback()
+			callback(null, true)
 
 		}).catch(err => {
 
@@ -89,7 +89,7 @@ module.exports.init = function (devices_data, callback) {
 				reconnectDevices(devices_data);
 			}, 5000);
 
-			callback();
+			callback(null, true);
 		});
 	}
 

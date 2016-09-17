@@ -23,7 +23,7 @@ module.exports.init = function (devices_data, callback) {
 		listenForEvents(devices_data[i]);
 	}
 
-	callback();
+	callback(null, true);
 };
 
 module.exports.pair = function (socket) {
