@@ -1,6 +1,6 @@
 {
   "id": "com.plugwise",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "compatibility": ">=0.8.30",
   "category": [
     "climate",
@@ -44,6 +44,12 @@
         "target_temperature",
         "measure_temperature"
       ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 4,
+          "max": 30
+        }
+      },
       "pair": [
         {
           "id": "list_devices",
