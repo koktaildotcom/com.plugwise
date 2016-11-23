@@ -209,8 +209,15 @@ module.exports.pair = function (socket) {
 
 		console.log(`Stretch: list ${plugs.length} plugs`);
 
-		// Return response
-		callback(null, plugs);
+		if (plugs.length > 0) {
+
+			// Return response
+			callback(null, plugs);
+		} else {
+
+			// Return response
+			callback(__('pair.error'), []);
+		}
 
 		// Empty stretches array
 		stretches = [];

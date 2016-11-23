@@ -7,6 +7,11 @@ var devices = [];
 
 module.exports.init = function (devices_data, callback) {
 
+	let count = 0;
+
+	// No devices, driver init is finished
+	if (devices_data.length === 0) callback(null, true);
+
 	// Loop over installed devices
 	for (let i in devices_data) {
 
@@ -14,7 +19,13 @@ module.exports.init = function (devices_data, callback) {
 		module.exports.setUnavailable(devices_data[i], "Offline");
 
 		// Refresh client
-		devices_data[i].client = new Anna(devices_data[i].password, devices_data[i].ip, devices_data[i].id, devices_data[i].hostname);
+		devices_data[i].client = new Anna(devices_data[i].password, devices_data[i].ip, devices_data[i].id, devices_data[i].hostname, () => {
+			count++;
+			if (count === devices_data.length) {
+				console.log('Anna: driver done');
+				callback(null, true);
+			}
+		});
 
 		// Store device
 		devices.push({ data: devices_data[i] });
@@ -22,8 +33,6 @@ module.exports.init = function (devices_data, callback) {
 		// Start listening for device events
 		listenForEvents(devices_data[i]);
 	}
-
-	callback(null, true);
 };
 
 module.exports.pair = function (socket) {
@@ -54,8 +63,15 @@ module.exports.pair = function (socket) {
 
 			console.log(`Anna: list ${results.length} devices`);
 
-			// Return response
-			callback(null, results);
+			if (results.length > 0) {
+
+				// Return response
+				callback(null, results);
+			} else {
+
+				// Return response
+				callback(__('pair.error'), []);
+			}
 		});
 	});
 
