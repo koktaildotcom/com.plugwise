@@ -283,6 +283,38 @@ module.exports.capabilities = {
 				callback(true, false);
 			}
 		}
+	},
+	measure_power: {
+		get: function (device_data, callback) {
+			if (!device_data) callback(true, null);
+
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client) {
+
+				// Callback formatted value
+				callback(null, device.client.measure_power);
+			}
+			else {
+				callback(true, false);
+			}
+		}
+	},
+	meter_power: {
+		get: function (device_data, callback) {
+			if (!device_data) callback(true, null);
+
+			// Get device
+			var device = getDevice(device_data.id);
+			if (device && device.client) {
+
+				// Callback formatted value
+				callback(null, device.client.meter_power);
+			}
+			else {
+				callback(true, false);
+			}
+		}
 	}
 };
 
@@ -317,6 +349,20 @@ function listenForEvents(device_data) {
 
 			// Emit realtime
 			module.exports.realtime(device_data_obj, "onoff", onoff);
+	
+		}).on("measurepowerchanged", function (measure_power) {
+
+			console.log("Stretch: emit realtime measure_power update: " + device_data.plug_name + " " + measure_power);
+
+			// Emit realtime
+			module.exports.realtime(device_data_obj, "measure_power", measure_power);
+
+		}).on("meterpowerchanged", function (meter_power) {
+
+			console.log("Stretch: emit realtime meter_power update: " + device_data.plug_name + " " + meter_power);
+
+			// Emit realtime
+			module.exports.realtime(device_data_obj, "meter_power", meter_power);
 
 		});
 	}
