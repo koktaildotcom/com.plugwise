@@ -252,7 +252,7 @@ module.exports.capabilities = {
 
 	onoff: {
 		get: function (device_data, callback) {
-			if (!device_data) callback(true, null);
+			if (!device_data) return callback(true, null);
 
 			// Get device
 			var device = getDevice(device_data.id);
@@ -266,7 +266,7 @@ module.exports.capabilities = {
 			}
 		},
 		set: function (device_data, onoff, callback) {
-			if (!device_data) callback(true, null);
+			if (!device_data) return callback(true, null);
 
 			// Get device
 			var device = getDevice(device_data.id);
@@ -286,7 +286,7 @@ module.exports.capabilities = {
 	},
 	measure_power: {
 		get: function (device_data, callback) {
-			if (!device_data) callback(true, null);
+			if (!device_data) return callback(true, null);
 
 			// Get device
 			var device = getDevice(device_data.id);
@@ -302,7 +302,7 @@ module.exports.capabilities = {
 	},
 	meter_power: {
 		get: function (device_data, callback) {
-			if (!device_data) callback(true, null);
+			if (!device_data) return callback(true, null);
 
 			// Get device
 			var device = getDevice(device_data.id);
@@ -350,14 +350,14 @@ function listenForEvents(device_data) {
 			// Emit realtime
 			module.exports.realtime(device_data_obj, "onoff", onoff);
 	
-		}).on("measurepowerchanged", function (measure_power) {
+		}).on("measure_power_changed", function (measure_power) {
 
 			console.log("Stretch: emit realtime measure_power update: " + device_data.plug_name + " " + measure_power);
 
 			// Emit realtime
 			module.exports.realtime(device_data_obj, "measure_power", measure_power);
 
-		}).on("meterpowerchanged", function (meter_power) {
+		}).on("meter_power_changed", function (meter_power) {
 
 			console.log("Stretch: emit realtime meter_power update: " + device_data.plug_name + " " + meter_power);
 
