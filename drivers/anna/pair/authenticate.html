@@ -51,7 +51,7 @@
 				// Pairing failed
 				document.getElementById('submit').disabled = false;
 				document.getElementById('submit').value = __('pair.auth.try_again');
-				Homey.alert(__('pair.auth.smile.wrong_id'));
+				Homey.alert(__('pair.auth.smile.wrong_id', {error: err}));
 			}
 			else {
 

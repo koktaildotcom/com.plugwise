@@ -1,8 +1,7 @@
-"use strict";
+'use strict';
 
 const Log = require('homey-log').Log;
 
-module.exports.init = function () {
-
-	console.log('com.plugwise is running...');
+module.exports.init = () => {
+	console.log(`${Homey.manifest.id} running...`);
 };

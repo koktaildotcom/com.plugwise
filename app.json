@@ -1,6 +1,6 @@
 {
   "id": "com.plugwise",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "compatibility": ">=1.0.2",
   "category": [
     "climate",
@@ -75,8 +75,8 @@
       "class": "socket",
       "capabilities": [
         "onoff",
-		"measure_power",
-		"meter_power"
+        "measure_power",
+        "meter_power"
       ],
       "pair": [
         {
@@ -105,5 +105,6 @@
         }
       ]
     }
-  ]
+  ],
+  "flow": {}
 }

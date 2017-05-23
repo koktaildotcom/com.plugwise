@@ -15,7 +15,7 @@
 				"title": "Please enter the Smile ID",
 				"find_id": "There is a label on your Smile-device, the Smile ID can be found on this label as shown in the illustration.",
 				"id": "Smile ID",
-				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters.",
+				"wrong_id": "You entered a wrong Smile ID, please try again. The Smile ID is a string containing 8 lowercase letters. Error: __error__",
 				"unavailable": "This Anna thermostat is unavailable"
 			},
 			"stretch": {
@@ -23,7 +23,7 @@
 				"find_id": "There is a label on your Stretch-device, the Stretch ID can be found on this label as shown in the illustration.",
 				"id": "Stretch ID",
 				"ssid": "ssid",
-				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters.",
+				"wrong_id": "You entered a wrong Stretch ID, please try again. The Stretch ID is a string containing 8 lowercase letters. Error: __error__",
 				"add_device": "Adding the device(s)",
 				"unavailable": "This Plugwise plug is unavailable"
 			},

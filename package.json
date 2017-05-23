@@ -1,0 +1,30 @@
+{
+  "name": "com.plugwise",
+  "version": "1.0.0",
+  "description": "Let Homey control your Plugwise Anna and Stretch!",
+  "main": "app.js",
+  "dependencies": {
+    "homey-log": "^1.0.1",
+    "mdns-js": "^0.4.0",
+    "pixl-xml": "^1.0.4",
+    "plugwise": "^0.1.0",
+    "request": "^2.67.0",
+    "plugwise-anna": "^0.0.1",
+    "plugwise-stretch": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "run": "homeyConfig compose && athom project --run",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athombv/com.plugwise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/athombv/com.plugwise/issues"
+  },
+  "homepage": "https://github.com/athombv/com.plugwise#readme"
+}
