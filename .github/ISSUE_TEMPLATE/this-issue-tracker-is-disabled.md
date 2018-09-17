@@ -1,6 +1,6 @@
 ---
 name: This issue tracker is disabled
-about: This issue tracker is Please report issues at https://github.com/athombv/homey/issues.
+about: Please report issues at https://github.com/athombv/homey/issues
 
 ---
 
