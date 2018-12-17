@@ -39,11 +39,10 @@
 		document.getElementById('submit').disabled = 'disabled';
 		document.getElementById('submit').value = __('pair.auth.checking');
 
-		// Store password of device
-		window.found_devices[window.selected_devices[0]].data.password = document.forms["form"]["password"].value;
+		const found = window.selected_devices[0];
 
-		// Create device object
-		var device = window.found_devices[window.selected_devices[0]].data;
+        var device = JSON.parse(found);
+        device['password'] = document.forms["form"]["password"].value;
 
 		Homey.emit('connect', device, function (err, result) {
 			if (err) {
